@@ -8,17 +8,17 @@ order: 3
 <p class="lead">Chrysalis and your apps update separately. Neither kind of update touches your data.</p>
 
 <h2>Chrysalis itself</h2>
-<p>Admins see new versions in <span class="ui">Settings</span> &gt; <span class="ui">Server</span>, which checks when you open it (never in the background) and tells you how this copy updates. Your settings and data live outside the program, so replacing the program is safe.</p>
+<p>When a new version is out, admins see an <span class="ui">Update to X</span> button at the bottom of the launcher and in <span class="ui">Settings</span> &gt; <span class="ui">Server</span>. Chrysalis only checks when one of those opens, never in the background.</p>
 <table>
   <thead><tr><th>Install</th><th>How to update</th></tr></thead>
   <tbody>
-    <tr><td>Windows, macOS, Linux</td><td>Stop Chrysalis, download the new version, and replace the old program folder with it. On macOS, clear the quarantine flag again as in <a href="install.html#macos">Install</a>.</td></tr>
-    <tr><td>Portable copy</td><td>Download the new version, move <code>config.yaml</code> and the <code>data</code> folder into it, then delete the old folder.</td></tr>
-    <tr><td>Android</td><td>The launcher app shows <span class="ui">Get version X</span> when a new release is out. Tap it, open the downloaded APK, and install it over the old app. Your data stays.</td></tr>
+    <tr><td>Windows, macOS, Linux, portable copy</td><td>Click <span class="ui">Update to X</span>. Chrysalis downloads the new version, replaces itself and restarts, and the page reloads when it is back. Your settings and data stay where they are.</td></tr>
+    <tr><td>Android</td><td>The launcher app shows <span class="ui">Get version X</span>. Tap it, open the downloaded APK, and install it over the old app. Your data stays.</td></tr>
     <tr><td>Docker</td><td><code>docker compose pull &amp;&amp; docker compose up -d</code>. Your data stays in the volume.</td></tr>
     <tr><td>From source</td><td><code>git pull &amp;&amp; bun install &amp;&amp; (cd client-agent &amp;&amp; bun install) &amp;&amp; bun run build:client</code>, then restart.</td></tr>
   </tbody>
 </table>
+<p>If the button says Chrysalis cannot replace its own files, its folder is somewhere your account cannot write to (such as <code>Program Files</code>). Move the folder somewhere you own, like your home folder, and try again.</p>
 
 <h3>Staging installs</h3>
 <p>A staging copy follows the staging pre-release instead of stable releases: whenever a newer staging build is published, it is offered. On Android the button reads <span class="ui">Get the latest staging build</span>. Docker users pull the <code>:staging</code> tag.</p>
