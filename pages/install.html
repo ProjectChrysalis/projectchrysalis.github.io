@@ -1,0 +1,90 @@
+<!--
+title: Install
+description: Download Chrysalis for Windows, macOS, Linux or Android, or run it in Docker.
+section: Start here
+order: 1
+-->
+<h1>Install</h1>
+<p class="lead">Chrysalis is one download with nothing else to install. It runs a small server on your device and opens in your browser.</p>
+
+<p>Every download is on the <a href="https://github.com/ProjectChrysalis/Chrysalis-Engine/releases/latest">releases page</a>. Pick the file for your system:</p>
+
+<table>
+  <thead><tr><th>System</th><th>File</th></tr></thead>
+  <tbody>
+    <tr><td>Windows 10 and 11</td><td><code>Chrysalis-&lt;version&gt;-windows-x64.zip</code></td></tr>
+    <tr><td>macOS, Apple silicon (M1 and later)</td><td><code>Chrysalis-&lt;version&gt;-macos-arm64.tar.gz</code></td></tr>
+    <tr><td>macOS, Intel</td><td><code>Chrysalis-&lt;version&gt;-macos-x64.tar.gz</code></td></tr>
+    <tr><td>Linux, most PCs</td><td><code>Chrysalis-&lt;version&gt;-linux-x64.tar.gz</code></td></tr>
+    <tr><td>Linux, ARM (Raspberry Pi 4 and 5, ARM servers)</td><td><code>Chrysalis-&lt;version&gt;-linux-arm64.tar.gz</code></td></tr>
+    <tr><td>Android 9 or newer, 64-bit</td><td><code>Chrysalis-&lt;version&gt;-android-arm64.apk</code></td></tr>
+  </tbody>
+</table>
+
+<h2>Windows</h2>
+<ol class="steps">
+  <li>Download the <code>windows-x64.zip</code> file and unzip it somewhere you keep programs, such as your Documents folder.</li>
+  <li>Open the unzipped folder and double-click <code>chrysalis.exe</code>.</li>
+  <li>If Windows shows <span class="ui">Windows protected your PC</span>, click <span class="ui">More info</span>, then <span class="ui">Run anyway</span>. The program is not signed with a paid certificate, so Windows warns about it the first time.</li>
+  <li>A window opens with the server's log and your browser opens Chrysalis. Keep that window open while you use it; closing it stops Chrysalis.</li>
+</ol>
+
+<h2>macOS</h2>
+<ol class="steps">
+  <li>Download the file for your Mac. Not sure which? Apple menu, <span class="ui">About This Mac</span>: <span class="ui">Chip: Apple M…</span> means <code>macos-arm64</code>, <span class="ui">Processor: Intel</span> means <code>macos-x64</code>.</li>
+  <li>Double-click the download to unpack it.</li>
+  <li>Open <span class="ui">Terminal</span>, type <code>cd </code> (with a space), drag the unpacked folder into the Terminal window, and press Return.</li>
+  <li>macOS blocks programs downloaded from the internet that are not notarized. Clear that once for this folder, then start Chrysalis:
+<pre><code>xattr -dr com.apple.quarantine .
+./chrysalis</code></pre>
+  </li>
+  <li>Your browser opens Chrysalis. Keep the Terminal window open while you use it.</li>
+</ol>
+
+<h2>Linux</h2>
+<pre><code>tar -xzf Chrysalis-*-linux-x64.tar.gz
+cd Chrysalis-*-linux-x64
+./chrysalis</code></pre>
+<p>Chrysalis opens your browser when there is a desktop, and prints the address otherwise. To run it as a service, see <a href="settings.html">Settings</a> for the config file and the environment variables.</p>
+
+<h2>Android</h2>
+<ol class="steps">
+  <li>On your phone, download the <code>.apk</code> file from the releases page.</li>
+  <li>Open it. Android asks you to allow your browser to install apps; allow it, then tap <span class="ui">Install</span>.</li>
+  <li>Open <span class="ui">Chrysalis</span>. It unpacks itself the first time, starts its server on the phone, and opens it in your browser.</li>
+  <li>Tap <span class="ui">Keep running in the background</span> so Android does not pause Chrysalis while you are in the browser.</li>
+</ol>
+<div class="warn">
+  <p>Uninstalling the Android app deletes everything it stored. Before you uninstall, <a href="apps.html#back-up-an-app">export a backup</a> of each app you care about.</p>
+</div>
+<p>The launcher app has a <span class="ui">Logs</span> button that shows what the server is doing, which is the first place to look if something does not start.</p>
+
+<h2>Docker</h2>
+<p>The image is <code>ghcr.io/projectchrysalis/chrysalis-engine</code>, for x64 and ARM64. Save this as <code>docker-compose.yml</code>:</p>
+<pre><code>services:
+  chrysalis:
+    image: ghcr.io/projectchrysalis/chrysalis-engine:latest
+    container_name: chrysalis
+    restart: unless-stopped
+    ports:
+      - "8788:8788"
+    volumes:
+      - ./chrysalis-data:/chrysalis</code></pre>
+<p>Then start it and read the setup link from its log:</p>
+<pre><code>docker compose up -d
+docker compose logs chrysalis</code></pre>
+<p>Settings and data live in the <code>/chrysalis</code> volume. The container listens on your network by default, so other devices can open <code>http://&lt;this computer&gt;:8788</code>. If you open Chrysalis by a name instead of an IP address (a reverse proxy or a local DNS name), add that name with <code>CHRYSALIS_ALLOWED_HOSTS</code>.</p>
+
+<h2>From source</h2>
+<p>With <a href="https://bun.sh">Bun</a> installed:</p>
+<pre><code>git clone https://github.com/ProjectChrysalis/Chrysalis-Engine
+cd Chrysalis-Engine
+bun install
+(cd client-agent &amp;&amp; bun install)
+bun run build:client
+bun start</code></pre>
+
+<h2>Staging builds</h2>
+<p>The <a href="https://github.com/ProjectChrysalis/Chrysalis-Engine/releases/tag/staging-latest">staging pre-release</a> is rebuilt every time new work lands on the <code>staging</code> branch. It gets features first and can break. On Android it installs as a separate <span class="ui">Chrysalis Staging</span> app with its own data, so a stable install on the same phone is untouched. The Docker tag is <code>:staging</code>.</p>
+
+<p>Installed? Continue with <a href="first-start.html">First start</a>.</p>

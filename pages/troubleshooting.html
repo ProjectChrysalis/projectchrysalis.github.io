@@ -1,0 +1,57 @@
+<!--
+title: Troubleshooting
+description: Fixes for the common problems: blocked downloads, lost setup links, phones that cannot connect, and apps that will not load.
+section: Help
+order: 2
+-->
+<h1>Troubleshooting</h1>
+<p class="lead">Start with the log. It is in the window where Chrysalis started, in <code>data/logs/chrysalis.log</code>, and behind the <span class="ui">Logs</span> button in the Android app.</p>
+
+<h2>macOS says Chrysalis cannot be opened</h2>
+<p>macOS blocks downloaded programs that are not notarized. In Terminal, in the unpacked Chrysalis folder:</p>
+<pre><code>xattr -dr com.apple.quarantine .</code></pre>
+<p>Do this again after each update, since each download is a new folder.</p>
+
+<h2>Windows says it protected your PC</h2>
+<p>Click <span class="ui">More info</span>, then <span class="ui">Run anyway</span>. Windows warns about programs that are not signed with a paid certificate.</p>
+
+<h2>I lost the setup link</h2>
+<p>It is printed in the window where Chrysalis started and written to <code>data/logs/chrysalis.log</code>. On Docker, run <code>docker compose logs chrysalis</code>. Run <code>chrysalis paths</code> to find the data folder. The link stops working once the first account exists.</p>
+
+<h2>I forgot my password</h2>
+<p>Stop Chrysalis and run <code>chrysalis reset-password &lt;username&gt;</code>. Admins can also set a new password for other accounts in <span class="ui">Settings</span> &gt; <span class="ui">Users</span>.</p>
+
+<h2>The port is already in use</h2>
+<p>Another program, or another copy of Chrysalis, is using port 8788. Close it, or start Chrysalis on another port:</p>
+<pre><code>./chrysalis --port 8790</code></pre>
+<p>To keep the new port, set <code>port</code> in <a href="settings.html">config.yaml</a>.</p>
+
+<h2>My phone cannot connect</h2>
+<ul>
+  <li>Check that <span class="ui">Allow other devices on my network</span> is on in <span class="ui">Settings</span> &gt; <span class="ui">Server</span>.</li>
+  <li>Both devices need to be on the same network. Guest Wi-Fi networks often keep devices apart.</li>
+  <li>Allow Chrysalis, or its port, through the computer's firewall. Windows asks the first time it listens on the network.</li>
+  <li>Opening it by a name rather than an IP address? Add that name under <span class="ui">Host names</span>.</li>
+</ul>
+
+<h2>The microphone does not work on my phone</h2>
+<p>Phones only allow the microphone over HTTPS. See <a href="phone.html#https-for-the-microphone-and-installing-as-an-app">HTTPS for the microphone</a>.</p>
+
+<h2>Android stops Chrysalis in the background</h2>
+<p>Tap <span class="ui">Keep running in the background</span> in the Chrysalis app and allow it. Some phones have their own battery savers on top of Android's; allow Chrysalis there too.</p>
+
+<h2>Android will not install the update</h2>
+<p>See <a href="updating.html#if-android-will-not-install-over-the-old-app">If Android will not install over the old app</a>.</p>
+
+<h2>An app shows a blank page or an error</h2>
+<ul>
+  <li>Ask the agent: "the app shows a blank page, find out why". It can read the app's build errors and the errors the page reported.</li>
+  <li><span class="ui">Settings</span> &gt; <span class="ui">Developer</span> lists each app's last build.</li>
+  <li>If it started after a change, ask the agent to put the app back the way it was before that change.</li>
+</ul>
+
+<h2>An app update has conflicts</h2>
+<p>Nothing has changed yet. Pick <span class="ui">Keep mine</span>, <span class="ui">Take update</span> or <span class="ui">Ask the agent to merge</span>; <a href="updating.html#your-edits-are-kept">Updating</a> explains each.</p>
+
+<h2>Still stuck</h2>
+<p>Ask on the <a href="https://discord.gg/maFVqyeD4Q">Discord</a>, or <a href="https://github.com/ProjectChrysalis/Chrysalis-Engine/issues">open an issue</a> with your version, how you run Chrysalis, and the relevant part of the log.</p>

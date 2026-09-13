@@ -1,0 +1,46 @@
+<!--
+title: Security and privacy
+description: What stays on your device, what apps and plugins can and cannot do, and how to report a vulnerability.
+section: Help
+order: 1
+-->
+<h1>Security and privacy</h1>
+<p class="lead">Chrysalis runs code written by an AI agent and by other people, so it is built to keep that code in bounds. This page explains what those bounds are.</p>
+
+<h2>Your data stays with you</h2>
+<ul>
+  <li>Chats, characters, apps and settings are files on the device running Chrysalis. There is no Chrysalis account and no Chrysalis cloud.</li>
+  <li>Model keys are stored on the server, outside your workspace. They are never sent to your browser, to apps, or to the agent.</li>
+  <li>Chrysalis goes online for things you set up or ask for: the model providers you connect, installing apps and their packages, the Store list, checking installed apps' repositories for updates when the launcher opens, and checking for a new Chrysalis version when an admin opens <span class="ui">Settings</span> &gt; <span class="ui">Server</span>. Apps reach the internet only through plugins with the <code>network</code> permission.</li>
+</ul>
+
+<h2>Accounts</h2>
+<ul>
+  <li>Every account has its own apps, data, agent and connections. Only the admin can change server settings or manage accounts.</li>
+  <li>By default only the computer running Chrysalis can open it. Turning on network access lets other devices reach the sign-in page; every account still needs its password.</li>
+  <li>Requests from unknown host names are refused, which protects against websites that try to reach Chrysalis on your network through your browser. Add names you use in <code>allowedHosts</code>.</li>
+</ul>
+
+<h2>Apps</h2>
+<p>An app's page runs in a sandboxed frame with no access to your session, cookies, or the rest of Chrysalis. It can only reach its own server routes and a short list of shared ones (models, images, speech, embeddings, and shared assets). It cannot open the agent, your settings, other apps, or other websites directly, and the server enforces the same list.</p>
+
+<h2>Plugins</h2>
+<p>Plugins run on the server in a sandbox. A plugin can only use what its permissions allow, and plugins that came from a repository, a file, or an import only get the permissions you approved:</p>
+<ul>
+  <li>Installing or importing shows every plugin's permissions first; the install is the approval.</li>
+  <li>A community app's update that asks for a new permission stops and asks you again.</li>
+  <li>File access is limited to the app's own <code>data</code> folder. Network access can be limited to the hosts a plugin lists, and your computer and local network are blocked.</li>
+  <li>You can turn any plugin off, or remove it, from the app's <span class="ui">Plugins</span> dialog.</li>
+</ul>
+<div class="warn">
+  <p>Permissions limit what a plugin can reach, not what it does with it. A plugin that can read an app's data and reach the network can send that data to the hosts it lists. Install apps and plugins you trust.</p>
+</div>
+
+<h2>Backups and imports</h2>
+<p>An exported backup contains the app's data, so treat it like the data itself. When you import one, Chrysalis unpacks it into a separate folder, refuses files that try to land outside it, and shows you what it contains before installing. An app restored from a file is never marked official, whatever it claims.</p>
+
+<h2>The agent</h2>
+<p>The agent works inside your workspace. Its command shell runs in your browser tab, not on the server, and its internet access is off until you turn it on. Every file it writes is saved to your workspace history.</p>
+
+<h2>Report a vulnerability</h2>
+<p>Please report security problems privately through <a href="https://github.com/ProjectChrysalis/Chrysalis-Engine/security/advisories/new">GitHub's security advisories</a>, not in a public issue or on Discord. Include your Chrysalis version (<code>chrysalis --version</code>), how you run it, and the steps to reproduce.</p>

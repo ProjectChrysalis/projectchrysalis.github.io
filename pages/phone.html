@@ -1,0 +1,36 @@
+<!--
+title: Use it from your phone
+description: Open Chrysalis from your phone on the same network, from anywhere over a private network, or run it on the phone itself.
+section: Using Chrysalis
+order: 1
+-->
+<h1>Use it from your phone</h1>
+<p class="lead">There are three ways to use Chrysalis on a phone. Pick the one that fits.</p>
+
+<h2>Chrysalis on your computer, phone on the same Wi-Fi</h2>
+<ol class="steps">
+  <li>On the computer, open <span class="ui">Settings</span> &gt; <span class="ui">Server</span>. Only the admin account sees this tab.</li>
+  <li>Turn on <span class="ui">Allow other devices on my network</span>. It applies right away.</li>
+  <li>Scan the QR code with your phone's camera, or type the address shown under it.</li>
+</ol>
+<p>Every account still needs its password from the phone. If the phone cannot connect, check that both devices are on the same network and that the computer's firewall allows the port (8788 unless you changed it).</p>
+
+<h2>Away from home</h2>
+<p>Put the computer and the phone on the same private network with <a href="https://tailscale.com">Tailscale</a>, then open the computer's Tailscale address on the phone. If you use its Tailscale name rather than the IP address, add that name under <span class="ui">Host names</span> in <span class="ui">Settings</span> &gt; <span class="ui">Server</span>.</p>
+<div class="warn">
+  <p>Do not forward Chrysalis's port to the open internet. Apps run real code on the server, and accounts are the only thing standing in front of them.</p>
+</div>
+
+<h2>HTTPS for the microphone and installing as an app</h2>
+<p>Phones only allow the microphone, and adding a site to the home screen as an app, over HTTPS. To serve Chrysalis over HTTPS you need a certificate and key file for the address you open it by. With Tailscale:</p>
+<pre><code>tailscale cert my-computer.tailnet-name.ts.net</code></pre>
+<p>Then in <span class="ui">Settings</span> &gt; <span class="ui">Server</span>, turn on <span class="ui">Use HTTPS</span> and fill in <span class="ui">Certificate</span> and <span class="ui">Key</span> with the two files it wrote. The same settings are <code>ssl.certPath</code> and <code>ssl.keyPath</code> in <a href="settings.html">config.yaml</a>.</p>
+
+<h2>Chrysalis on the phone itself</h2>
+<p>Install the <a href="install.html#android">Android app</a>. It runs the whole server on the phone and opens it in your browser, so it works with no computer and no network.</p>
+<ul>
+  <li>Tap <span class="ui">Keep running in the background</span>, or Android may pause the server while you are in the browser.</li>
+  <li><span class="ui">Stop</span> shuts the server down; <span class="ui">Open Chrysalis</span> opens it again in the browser.</li>
+  <li><span class="ui">Logs</span> shows what the server is doing, with a <span class="ui">Copy</span> button for bug reports.</li>
+  <li>Your data lives inside the app. Uninstalling deletes it, so <a href="apps.html#back-up-an-app">export backups</a> first.</li>
+</ul>

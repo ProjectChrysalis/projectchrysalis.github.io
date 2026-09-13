@@ -1,0 +1,37 @@
+<!--
+title: Community and contributing
+description: Where to ask questions, report bugs, and help build Chrysalis.
+section: Help
+order: 3
+-->
+<h1>Community and contributing</h1>
+<p class="lead">Chrysalis is free software, built in the open.</p>
+
+<div class="cards">
+  <a class="card" href="https://discord.gg/maFVqyeD4Q"><strong>Discord</strong><span>Questions, ideas, and apps you have built.</span></a>
+  <a class="card" href="https://github.com/ProjectChrysalis/Chrysalis-Engine/issues"><strong>Issues</strong><span>Bugs and feature requests for Chrysalis itself.</span></a>
+  <a class="card" href="https://github.com/ProjectChrysalis/Roleplay-Chrysalis/issues"><strong>Roleplay issues</strong><span>Bugs and requests for the Roleplay app.</span></a>
+  <a class="card" href="https://github.com/ProjectChrysalis/app-store"><strong>App Store list</strong><span>Add your app to the Store.</span></a>
+</div>
+
+<h2>Reporting a bug</h2>
+<p>Include your Chrysalis version (<code>chrysalis --version</code>, or <span class="ui">Settings</span> &gt; <span class="ui">Server</span>), how you run it (download, Android, Docker or source), what you did, what you expected, and the relevant part of the log. Security problems go to <a href="security.html#report-a-vulnerability">private advisories</a> instead.</p>
+
+<h2>Contributing code</h2>
+<ul>
+  <li><code>main</code> is stable and releases are tagged there. <code>staging</code> is where new work lands first: open pull requests against <code>staging</code>.</li>
+  <li>Every push and pull request runs the tests, builds every download, and starts each one on Windows, macOS, Linux and in Docker.</li>
+  <li>Run <code>bun run typecheck</code>, <code>bun run lint</code> and <code>bun test</code> before opening a pull request.</li>
+</ul>
+<pre><code>git clone https://github.com/ProjectChrysalis/Chrysalis-Engine
+cd Chrysalis-Engine
+bun install
+(cd client-agent &amp;&amp; bun install)
+bun run build:client
+bun run dev</code></pre>
+
+<h2>Improving these docs</h2>
+<p>This site lives in <a href="https://github.com/ProjectChrysalis/projectchrysalis.github.io">its own repository</a>. Every page has an <span class="ui">Edit this page on GitHub</span> link at the bottom.</p>
+
+<h2>License</h2>
+<p>Chrysalis is licensed under the GNU Affero General Public License v3.0. If you run a modified Chrysalis for other people over a network, you must offer them its source.</p>

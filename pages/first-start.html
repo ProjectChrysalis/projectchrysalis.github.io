@@ -1,0 +1,46 @@
+<!--
+title: First start
+description: Create the admin account, connect a model, and pick your first apps.
+section: Start here
+order: 2
+-->
+<h1>First start</h1>
+<p class="lead">The first time Chrysalis starts, it gives you a one-time setup link. Everything after that happens in the browser.</p>
+
+<h2>Create your account</h2>
+<ol class="steps">
+  <li>Chrysalis opens your browser at its setup address. If it did not, copy the link that starts with <code>http://</code> and contains <code>#setup=</code> from the window where Chrysalis started.</li>
+  <li>Pick a username and password. This first account is the <strong>admin</strong>: it can change server settings and add more people.</li>
+  <li>The setup link works once. After that, the sign-in screen lists the accounts on this server.</li>
+</ol>
+<div class="note">
+  <p>Lost the setup link? It is also written to <code>data/logs/chrysalis.log</code>. Run <code>chrysalis paths</code> to see where the data folder is.</p>
+</div>
+
+<h2>Connect a model</h2>
+<p>Chrysalis talks to AI models through connections you add once:</p>
+<ol class="steps">
+  <li>Open <span class="ui">Settings</span>, then <span class="ui">API connections</span>.</li>
+  <li>Click <span class="ui">Add connection</span> and choose a provider. Providers that need more than a key walk you through the extra steps.</li>
+  <li>Paste the key. It is stored on the server and never sent to your browser or to apps.</li>
+</ol>
+<p>A model running on your own computer works too: pick it from the <span class="ui">Local model</span> group and give the address of its server. On another computer, use that computer's network address instead of <code>localhost</code>.</p>
+
+<h2>Pick your apps</h2>
+<p>With no apps installed, the launcher shows a welcome screen with the official apps from the Store. Pick the ones you want, or skip and open the <a href="apps.html#the-store">Store</a> later. Want to roleplay? Pick <a href="roleplay.html">Roleplay</a>.</p>
+
+<h2>The launcher</h2>
+<p>The launcher is the <span class="ui">Where to?</span> page every new tab starts on:</p>
+<ul>
+  <li><strong>System</strong> holds the <a href="agent.html">Agent</a>, which builds and changes your apps.</li>
+  <li><strong>Your apps</strong> lists what is installed. Select one to see its files, check for updates, export it, or launch it.</li>
+  <li><strong>Add</strong> has the Store, <span class="ui">New app</span> and <span class="ui">Import app</span>.</li>
+</ul>
+<p>Apps open in tabs, so you can keep several side by side.</p>
+
+<h2>More people</h2>
+<p>The admin can add accounts in <span class="ui">Settings</span> &gt; <span class="ui">Users</span>. Every account gets its own apps, chats, agent and model connections; nobody sees anyone else's.</p>
+
+<h2>Forgot a password</h2>
+<p>Stop Chrysalis, then run this in the program's folder (on Docker, inside the container):</p>
+<pre><code>chrysalis reset-password &lt;username&gt;</code></pre>

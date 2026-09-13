@@ -1,0 +1,81 @@
+<!--
+title: Apps and the Store
+description: Install apps from the Store or a git repository, back them up, move them between devices, and manage their plugins.
+section: Apps
+order: 1
+-->
+<h1>Apps and the Store</h1>
+<p class="lead">Everything you do in Chrysalis happens in an app. Each one is a folder of plain files: a web page, optional plugins that run on the server, and the data it stores.</p>
+
+<h2>The Store</h2>
+<p>Open <span class="ui">Store</span> in the launcher to browse apps. Installing one shows its plugins and exactly what each is allowed to do before anything runs. New apps in the Store are marked so you notice them.</p>
+
+<h3>Official and community apps</h3>
+<ul>
+  <li><strong>Official</strong> apps are made by the Chrysalis maintainers. Their repositories live under the <a href="https://github.com/ProjectChrysalis">ProjectChrysalis</a> organization and end in <code>-Chrysalis</code>.</li>
+  <li><strong>Community</strong> apps are made by other people. They can be great, and they run real code on your server, so install ones you trust.</li>
+</ul>
+<p>Official status comes from where Chrysalis installed an app from, never from anything the app says about itself.</p>
+
+<h2>Import from git</h2>
+<p>Any app in a public git repository can be installed without the Store:</p>
+<ol class="steps">
+  <li>In the launcher, click <span class="ui">Import app</span> and keep <span class="ui">Git repository</span> selected.</li>
+  <li>Paste the repository's <code>https://</code> address and click <span class="ui">Inspect repository</span>. It is downloaded and inspected; nothing runs yet.</li>
+  <li>Review the app's plugins and their permissions, then click <span class="ui">Import this app</span>.</li>
+</ol>
+<p>The app updates from that repository from then on. SSH addresses (<code>git@…</code>) need git installed on the server; <code>https://</code> addresses work everywhere, including Android.</p>
+
+<h2>Back up an app</h2>
+<p>Select an app in the launcher and click the download button (<span class="ui">Export app</span>) next to <span class="ui">Check for updates</span>. Your browser saves a zip named like <code>roleplay-backup-2026-09-13.zip</code> with:</p>
+<ul>
+  <li>the app's files, including your own changes and plugins you added;</li>
+  <li>its data: chats, characters and whatever else the app stores;</li>
+  <li>where the app updates from, so a restored copy keeps updating.</li>
+</ul>
+<p>Installed packages and build output are left out; they come back on their own. Backups larger than 512 MB are refused.</p>
+
+<h2>Restore or move an app</h2>
+<ol class="steps">
+  <li>In the launcher, click <span class="ui">Import app</span>, then <span class="ui">Backup file</span>.</li>
+  <li>Click <span class="ui">Choose file</span> and pick the zip.</li>
+  <li>Check the preview: the name it installs as, whether it includes data, where it keeps updating from, and what its plugins can do. Then click <span class="ui">Import this app</span>.</li>
+</ol>
+<p>A restore never replaces an app you already have. If the name is taken, it installs beside it (for example <code>roleplay-2</code>), so you can compare and delete the one you do not want.</p>
+<div class="note">
+  <p>A restored copy of an official app shows as a community app until its next update brings its code back in line with the official repository. Only import backups you made or trust: a zip can contain any code.</p>
+</div>
+<p>A zip you made by hand works too, as long as <code>manifest.json</code> is at the top of the zip or inside its single top folder.</p>
+
+<h2>Plugins</h2>
+<p>Plugins are the part of an app that runs on the server: they store data, call models, reach the network, and give the agent tools. Open an app, then <span class="ui">Plugins</span> in its toolbar (on a phone, in the account menu) to:</p>
+<ul>
+  <li>see every plugin in the app with its permissions;</li>
+  <li>turn a plugin off without uninstalling it;</li>
+  <li>import a plugin from a git repository into this app;</li>
+  <li>check a plugin you imported for updates;</li>
+  <li>remove a plugin.</li>
+</ul>
+
+<h3>Permissions</h3>
+<table>
+  <thead><tr><th>Permission</th><th>Lets a plugin</th></tr></thead>
+  <tbody>
+    <tr><td><code>routes</code></td><td>Answer the app's requests to the server.</td></tr>
+    <tr><td><code>store</code></td><td>Keep its own small key and value storage.</td></tr>
+    <tr><td><code>fs</code></td><td>Read and write files in the app's <code>data</code> folder.</td></tr>
+    <tr><td><code>llm</code></td><td>Call models through your connections.</td></tr>
+    <tr><td><code>network</code></td><td>Make web requests, limited to the hosts it lists when it lists any.</td></tr>
+    <tr><td><code>tools</code></td><td>Give models tools to call.</td></tr>
+    <tr><td><code>schedule</code></td><td>Run on a timer.</td></tr>
+    <tr><td><code>hooks</code></td><td>Adjust other plugins' model requests (together with <code>llm</code>).</td></tr>
+    <tr><td><code>zip</code></td><td>Read zip files a person uploads, for importers.</td></tr>
+  </tbody>
+</table>
+<p>A plugin that can both read the app's data and reach the network could send that data somewhere. Chrysalis says so in plain words when it shows you such a plugin.</p>
+
+<h2>Create your own</h2>
+<p><span class="ui">New app</span> in the launcher makes a starter app and hands it to the <a href="agent.html">agent</a>, which builds it with you. See <a href="build-apps.html">Build an app</a> for how apps are put together.</p>
+
+<h2>Delete an app</h2>
+<p>Hover the app in the launcher and click its delete button, then confirm. The whole app goes, including its data. Export a backup first if you might want it back.</p>

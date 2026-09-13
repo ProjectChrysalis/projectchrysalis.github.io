@@ -1,0 +1,129 @@
+<!--
+title: Build an app
+description: How a Chrysalis app is put together: the manifest, the web frontend, server plugins, permissions and data.
+section: Build
+order: 1
+-->
+<h1>Build an app</h1>
+<p class="lead">The quickest way to build an app is to ask the agent. This page is for when you want to know how the pieces fit, write one by hand, or review what the agent made.</p>
+
+<h2>Start one</h2>
+<p>Click <span class="ui">New app</span> in the launcher, give it a name, and open the <a href="agent.html">agent</a>: "Build a reading tracker with a list of books and a notes field." The starter is a working React and Tailwind page the agent builds out with you.</p>
+
+<h2>What is in an app</h2>
+<pre><code>my-app/
+  manifest.json        name, version and what kind of app it is
+  package.json         the frontend's npm packages
+  index.html           the page; its module scripts are the entry points
+  src/                 the frontend (TypeScript, React, CSS)
+  public/              static files served at the app's root
+  plugins/
+    api/
+      manifest.json    the plugin's name, version and permissions
+      plugin.js        code that runs on the server
+  data/                what the app stores; never touched by updates
+  AGENTS.md            optional notes for the agent about this app</code></pre>
+<p><code>node_modules/</code> and <code>dist/</code> appear once the app is installed and built. They are derived, never committed, and left out of backups.</p>
+
+<h2>manifest.json</h2>
+<pre><code>{
+  "name": "Reading Tracker",
+  "version": "1.0.0",
+  "kind": "web",
+  "description": "Books I am reading, with notes.",
+  "author": "Your name",
+  "repository": "https://github.com/you/reading-tracker",
+  "engine": ">=1.0.0"
+}</code></pre>
+<table>
+  <thead><tr><th>Field</th><th></th></tr></thead>
+  <tbody>
+    <tr><td><code>name</code></td><td>Required. Shown in the launcher.</td></tr>
+    <tr><td><code>version</code></td><td>Required. Shown when an update is offered, and passed to your plugins when one lands.</td></tr>
+    <tr><td><code>kind</code></td><td>Required. <code>web</code> for a web app like the starter.</td></tr>
+    <tr><td><code>description</code>, <code>author</code></td><td>Optional. Shown in the launcher and the Store.</td></tr>
+    <tr><td><code>repository</code></td><td>Optional <code>https://</code> link to the app's source.</td></tr>
+    <tr><td><code>engine</code></td><td>Optional Chrysalis version range the app needs, like <code>&gt;=1.2.0</code>, <code>^1.0.0</code> or <code>&gt;=1.0.0 &lt;2.0.0</code>. Updates that need a newer Chrysalis are refused with a clear message.</td></tr>
+  </tbody>
+</table>
+<p>Chrysalis records where it installed an app from outside the app, so fields like <code>origin</code> and <code>source</code> in a manifest are written by Chrysalis and ignored when they come from a repository or a file.</p>
+
+<h2>The frontend</h2>
+<p>An app's page is a normal web project. Chrysalis builds it in your browser, so there is no dev server and no build step to run:</p>
+<ul>
+  <li>TypeScript, TSX and JSX, CSS and CSS modules, JSON, and assets imported as URLs.</li>
+  <li><code>?raw</code>, <code>?url</code>, <code>?inline</code> and <code>?worker</code> imports, <code>import.meta.glob</code>, <code>import.meta.env</code> with <code>VITE_*</code> values from <code>.env</code>, tsconfig paths and the <code>@</code> alias for <code>src</code>.</li>
+  <li>Tailwind v4 is built in: start <code>src/app.css</code> with <code>@import "tailwindcss";</code>.</li>
+  <li>Any npm package in <code>package.json</code>. Packages install with their install scripts turned off.</li>
+</ul>
+<p>Bundler plugins and toolchain config files do not run, so single-file component formats that need a compiler plugin are not supported. Saving a file hot-updates the open app and keeps component state.</p>
+
+<h3>Talking to your plugins</h3>
+<p>App pages run in a sandboxed frame. <code>fetch</code> works for the app's own server routes and a few shared ones (models, images, speech, embeddings, assets); everything else is blocked. Your app's id is the folder it was installed into, which is not always the name you picked, so read it from the page address:</p>
+<pre><code>const appId = decodeURIComponent(location.pathname.split("/").filter(Boolean)[2])
+const res = await fetch(`/v1/apps/${appId}/notes`)
+const { notes } = await res.json()</code></pre>
+<p>Images, fonts and other media from other websites cannot load directly. Serve them through one of your plugin's routes instead.</p>
+
+<h2>Plugins</h2>
+<p>A plugin is a folder under <code>plugins/</code> with a <code>manifest.json</code> and a <code>plugin.js</code>. Plugins run on the server in a sandbox and can only do what their permissions allow.</p>
+<pre><code>{
+  "name": "Notes API",
+  "version": "1.0.0",
+  "permissions": ["routes", "fs"]
+}</code></pre>
+<p><code>plugin.js</code> is an ES module. This one stores notes as files in the app's <code>data</code> folder:</p>
+<pre><code>export function handleRoute(req, host) {
+  if (req.method === "GET" &amp;&amp; req.path === "/notes") {
+    let ids = []
+    try { ids = host.fs.list("notes").map((f) =&gt; f.replace(/\.json$/, "")) } catch { /* none yet */ }
+    return { status: 200, json: { notes: ids } }
+  }
+  const m = /^\/notes\/([a-z0-9-]+)$/.exec(req.path)
+  if (req.method === "PUT" &amp;&amp; m) {
+    host.fs.write(`notes/${m[1]}.json`, JSON.stringify(req.body))
+    return { status: 200, json: { ok: true } }
+  }
+  return null
+}</code></pre>
+<p>Return <code>null</code> for requests the plugin does not handle. Every plugin in an app sees the same paths and the first one to answer wins, so give each plugin's routes their own prefix.</p>
+
+<h3>What a plugin can export</h3>
+<table>
+  <thead><tr><th>Export</th><th>Permission</th><th>Called</th></tr></thead>
+  <tbody>
+    <tr><td><code>handleRoute(req, host)</code></td><td><code>routes</code></td><td>For requests to <code>/v1/apps/&lt;app&gt;/…</code>. <code>req</code> has <code>method</code>, <code>path</code>, <code>query</code> and <code>body</code>. Return <code>{ status, json }</code> or <code>{ status, text }</code>.</td></tr>
+    <tr><td><code>TOOLS</code> and <code>handleTool(name, args, host)</code></td><td><code>tools</code></td><td>When a model calls one of the tools, returning <code>{ text, isError }</code>.</td></tr>
+    <tr><td><code>appTools(host)</code></td><td><code>tools</code></td><td>To add tools to other plugins' model requests that ask for them.</td></tr>
+    <tr><td><code>llmRequest(ctx, host)</code></td><td><code>hooks</code> and <code>llm</code></td><td>Before another plugin's model request, returning changes to it. The manifest's <code>priority</code> orders several.</td></tr>
+    <tr><td><code>onTick(host)</code></td><td><code>schedule</code></td><td>On the timer the manifest sets with <code>"schedule": { "intervalMs": 60000 }</code>.</td></tr>
+    <tr><td><code>onAppUpdate(ctx, host)</code></td><td></td><td>Once after an update lands, with the old and new versions, to upgrade stored data.</td></tr>
+    <tr><td><code>uiPanel(ctx, host)</code></td><td></td><td>To describe a settings panel the app can render for the plugin.</td></tr>
+  </tbody>
+</table>
+
+<h3>The host object</h3>
+<table>
+  <thead><tr><th></th><th>Permission</th><th>What it does</th></tr></thead>
+  <tbody>
+    <tr><td><code>host.fs</code></td><td><code>fs</code></td><td><code>read</code>, <code>readBase64</code>, <code>write</code>, <code>list</code> and <code>remove</code>, inside the app's <code>data</code> folder only.</td></tr>
+    <tr><td><code>host.store</code></td><td><code>store</code></td><td><code>get</code>, <code>put</code>, <code>delete</code> and <code>keys</code> on the plugin's own saved values.</td></tr>
+    <tr><td><code>host.llm</code></td><td><code>llm</code></td><td>Model calls through the user's connections, in two passes (below).</td></tr>
+    <tr><td><code>host.net</code></td><td><code>network</code></td><td>Web requests in two passes, like <code>host.llm</code>. List <code>networkHosts</code> in the manifest to limit where they may go.</td></tr>
+    <tr><td><code>host.log</code></td><td></td><td>Write to the server log.</td></tr>
+  </tbody>
+</table>
+
+<h3>Model and network calls take two passes</h3>
+<p>A plugin never waits on a model or a web request. On the first pass it asks with <code>host.llm.request(key, request)</code> and returns <code>{ __llmPending: true }</code> without writing anything. Chrysalis makes the call and runs the route again with the answer in <code>host.llm.results[key]</code>; that second pass does the work and responds. <code>host.net</code> works the same way. Because the first pass can run more than once, keep it free of side effects.</p>
+
+<h2>Data</h2>
+<p>Everything under <code>data/</code> belongs to the person using the app. Updates never change it, backups include it, and the agent can read and edit it directly, so plain JSON files with a clear layout make your app easy to extend by asking. A short <code>data/README.md</code> describing the files helps the agent a lot.</p>
+<p>Files in <code>data/</code> whose names start with an underscore, like <code>_example-book.json</code>, are templates: your app should not show them, the agent copies them to create new entries, and missing ones arrive with updates.</p>
+
+<h2>AGENTS.md</h2>
+<p>Put an <code>AGENTS.md</code> at the root of your app with the things the agent should know before changing it: where the important code is, the shapes of your data files, and anything that is easy to break. The agent reads it before editing the app.</p>
+
+<h2>Learn from a real app</h2>
+<p><a href="https://github.com/ProjectChrysalis/Roleplay-Chrysalis">Roleplay</a> is a large app built this way: its <code>plugins/</code> show routes, two-pass model calls and data layout, and its <code>src/</code> is a full React frontend.</p>
+<p>Ready to share it? See <a href="publish.html">Publish to the Store</a>.</p>

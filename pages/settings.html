@@ -1,0 +1,116 @@
+<!--
+title: Settings file
+description: Every server setting in config.yaml, where the file lives, and how to override a setting for one run.
+section: Using Chrysalis
+order: 2
+-->
+<h1>Settings file</h1>
+<p class="lead">Server settings live in <code>config.yaml</code>, a text file created on first start with a note on every line. Account settings, like model connections, live in the app under <span class="ui">Settings</span>.</p>
+
+<h2>Where it is</h2>
+<table>
+  <thead><tr><th>Install</th><th>config.yaml and the data folder</th></tr></thead>
+  <tbody>
+    <tr><td>Windows</td><td><code>%LOCALAPPDATA%\Chrysalis</code></td></tr>
+    <tr><td>macOS</td><td><code>~/Library/Application Support/Chrysalis</code></td></tr>
+    <tr><td>Linux</td><td><code>~/.local/share/chrysalis</code></td></tr>
+    <tr><td>Docker</td><td>the <code>/chrysalis</code> volume</td></tr>
+    <tr><td>From source</td><td>the repository folder</td></tr>
+    <tr><td>Android</td><td>inside the app</td></tr>
+  </tbody>
+</table>
+<p>Run <code>chrysalis paths</code> to print both locations. Admins also see them at the bottom of <span class="ui">Settings</span> &gt; <span class="ui">Server</span>.</p>
+
+<h3>Portable copy</h3>
+<p>Put a <code>config.yaml</code> next to the <code>chrysalis</code> program and Chrysalis keeps its settings and data in that folder instead, for example on a USB drive. When you update a portable copy, move <code>config.yaml</code> and the <code>data</code> folder into the new version's folder.</p>
+
+<h2>Editing it</h2>
+<p>Edit the file with any text editor while Chrysalis is stopped, then start it again. Admins can change most settings in <span class="ui">Settings</span> &gt; <span class="ui">Server</span> instead, which applies them right away and saves back to the file. You can also ask the agent, for example "let my phone connect": it shows exactly what will change and waits for you to approve.</p>
+<p>A misspelled or invalid setting does not stop Chrysalis from starting. It prints a warning that names the setting and uses the default.</p>
+
+<h2>Every setting</h2>
+<pre><code># Folder for accounts, apps, chats and keys. Relative paths start next to
+# this file. Move the folder while Chrysalis is stopped.
+dataRoot: "./data"
+
+# Port Chrysalis listens on.
+port: 8788
+
+# Let other devices (your phone, a tablet, another computer) open Chrysalis.
+#   false  only this computer
+#   true   any device that can reach this computer; every account still
+#          needs its password
+lan: false
+
+# Network interface to use when lan is true. "auto" means all of them.
+listenAddress: "auto"
+
+# Extra host names that may open Chrysalis, such as a local DNS name or a
+# Tailscale machine name. IP addresses and this computer's own name always work.
+allowedHosts: []
+
+# Serve over HTTPS. Phones only allow the microphone, installing as an app
+# and some other features over HTTPS. Paths start next to this file.
+ssl:
+  enabled: false
+  certPath: "./certs/cert.pem"
+  keyPath: "./certs/key.pem"
+
+# Open Chrysalis in your browser when it starts (desktop only).
+openBrowser: true
+
+apps:
+  # Let apps download their npm packages. Package install scripts never run.
+  packageDownloads: true
+  # Where the Store's list of apps comes from. false turns the Store off.
+  store: "https://raw.githubusercontent.com/ProjectChrysalis/app-store/main/apps.json"
+
+agent:
+  # The agent's command shell. It runs inside your browser tab, never on
+  # this computer.
+  shell: true
+  # Longest a single shell command may run, in seconds (5 to 3600).
+  shellTimeoutSeconds: 120
+
+# Model the agent uses when an account has not chosen one, as
+# "provider/model". null picks the first available model.
+defaultModel: null</code></pre>
+<p>The defaults above are what a new file starts with; your file may differ.</p>
+
+<h2>For one run only</h2>
+<p>Every setting also works as an environment variable or a command-line flag. Those apply to that run only and are shown as locked in <span class="ui">Settings</span> &gt; <span class="ui">Server</span>.</p>
+<table>
+  <thead><tr><th>Setting</th><th>Environment variable</th><th>Flag</th></tr></thead>
+  <tbody>
+    <tr><td><code>dataRoot</code></td><td><code>CHRYSALIS_DATA_ROOT</code></td><td><code>--data-root</code></td></tr>
+    <tr><td><code>port</code></td><td><code>CHRYSALIS_PORT</code></td><td><code>--port</code></td></tr>
+    <tr><td><code>lan</code></td><td><code>CHRYSALIS_LAN</code></td><td><code>--lan</code></td></tr>
+    <tr><td><code>listenAddress</code></td><td><code>CHRYSALIS_LISTEN_ADDRESS</code></td><td><code>--listen-address</code></td></tr>
+    <tr><td><code>allowedHosts</code></td><td><code>CHRYSALIS_ALLOWED_HOSTS</code></td><td><code>--allowed-hosts</code></td></tr>
+    <tr><td><code>ssl.enabled</code></td><td><code>CHRYSALIS_SSL_ENABLED</code></td><td><code>--ssl.enabled</code></td></tr>
+    <tr><td><code>ssl.certPath</code></td><td><code>CHRYSALIS_SSL_CERT_PATH</code></td><td><code>--ssl.cert-path</code></td></tr>
+    <tr><td><code>ssl.keyPath</code></td><td><code>CHRYSALIS_SSL_KEY_PATH</code></td><td><code>--ssl.key-path</code></td></tr>
+    <tr><td><code>openBrowser</code></td><td><code>CHRYSALIS_OPEN_BROWSER</code></td><td><code>--open-browser</code>, <code>--no-open-browser</code></td></tr>
+    <tr><td><code>apps.packageDownloads</code></td><td><code>CHRYSALIS_APPS_PACKAGE_DOWNLOADS</code></td><td><code>--apps.package-downloads</code></td></tr>
+    <tr><td><code>apps.store</code></td><td><code>CHRYSALIS_APPS_STORE</code></td><td><code>--apps.store</code></td></tr>
+    <tr><td><code>agent.shell</code></td><td><code>CHRYSALIS_AGENT_SHELL</code></td><td><code>--agent.shell</code></td></tr>
+    <tr><td><code>agent.shellTimeoutSeconds</code></td><td><code>CHRYSALIS_AGENT_SHELL_TIMEOUT_SECONDS</code></td><td><code>--agent.shell-timeout-seconds</code></td></tr>
+    <tr><td><code>defaultModel</code></td><td><code>CHRYSALIS_DEFAULT_MODEL</code></td><td><code>--default-model</code></td></tr>
+  </tbody>
+</table>
+<pre><code>CHRYSALIS_PORT=9000 ./chrysalis
+./chrysalis --lan --port 9000 --no-open-browser
+./chrysalis --home /srv/chrysalis</code></pre>
+<p><code>--home</code> (or <code>CHRYSALIS_HOME</code>) chooses the folder that holds <code>config.yaml</code>.</p>
+
+<h2>Commands</h2>
+<table>
+  <thead><tr><th>Command</th><th>What it does</th></tr></thead>
+  <tbody>
+    <tr><td><code>chrysalis</code> or <code>chrysalis start</code></td><td>Run Chrysalis.</td></tr>
+    <tr><td><code>chrysalis paths</code></td><td>Show where the config file and data folder are.</td></tr>
+    <tr><td><code>chrysalis reset-password &lt;user&gt;</code></td><td>Give an account a new password. Chrysalis must be stopped.</td></tr>
+    <tr><td><code>chrysalis --version</code></td><td>Print the version.</td></tr>
+    <tr><td><code>chrysalis --help</code></td><td>List every option.</td></tr>
+  </tbody>
+</table>

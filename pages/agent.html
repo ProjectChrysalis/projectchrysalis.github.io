@@ -1,0 +1,34 @@
+<!--
+title: The agent
+description: The built-in agent builds and changes your apps, and every change it makes can be undone.
+section: Using Chrysalis
+order: 4
+-->
+<h1>The agent</h1>
+<p class="lead">The agent is the part of Chrysalis that changes Chrysalis. Ask it for a feature, a fix or a whole new app, and it edits the files while the app stays open.</p>
+
+<h2>Ask for something</h2>
+<p>Open <span class="ui">Agent</span> from the launcher. To watch changes land as they happen, split an app's tab so the app sits beside the agent. Some things people ask for:</p>
+<ul>
+  <li>"Add a button to this chat that copies the last reply."</li>
+  <li>"Make the character list show the newest ones first."</li>
+  <li>"Build me an app for tracking the books I read, with a notes field."</li>
+  <li>"Why does my app show a blank page?"</li>
+</ul>
+<p>When the agent saves a file, an open app updates in place without losing what you were doing. After each change the agent waits for the app to build and reads any errors, so it fixes its own mistakes before telling you it is done.</p>
+
+<h2>Everything can be undone</h2>
+<p>Your workspace (your apps and their data) is a git repository. Every file the agent writes is saved to its history under its name, so you can ask it to show what changed or to put a file back the way it was. Updates and imports are saved to the same history.</p>
+
+<h2>What it can reach</h2>
+<ul>
+  <li><strong>Your workspace:</strong> your apps, their plugins and their data. It cannot read your model keys or other accounts.</li>
+  <li><strong>A command shell</strong> that runs inside your browser tab, never on the server, with Python available. Turn it off with <code>agent.shell</code> in <a href="settings.html">config.yaml</a>.</li>
+  <li><strong>Internet access in that shell</strong> only when you turn it on in <span class="ui">Settings</span> &gt; <span class="ui">Agent</span>. Your own computer and local network stay blocked either way.</li>
+  <li><strong>Web search</strong> once you add a search key in <span class="ui">Settings</span> &gt; <span class="ui">MCP servers</span>.</li>
+  <li><strong>Tools from MCP servers</strong> you add in <span class="ui">Settings</span> &gt; <span class="ui">MCP servers</span>.</li>
+</ul>
+<p>For the admin, the agent can also change server settings, such as letting your phone connect. It always shows the exact change and waits for your approval.</p>
+
+<h2>Choosing its model</h2>
+<p>The agent uses any model from your <span class="ui">API connections</span>. Pick one in the agent's model menu; <span class="ui">Settings</span> &gt; <span class="ui">Agent</span> also holds its instructions and how it handles long sessions. Building apps works best with a strong coding model.</p>

@@ -1,0 +1,62 @@
+<!--
+title: Publish to the Store
+description: Share an app from a public git repository and add it to the Chrysalis Store.
+section: Build
+order: 2
+-->
+<h1>Publish to the Store</h1>
+<p class="lead">Any public git repository with a Chrysalis app in it can be installed with <span class="ui">Import app</span>. Adding it to the Store puts it in front of everyone.</p>
+
+<h2>Put your app in a repository</h2>
+<ol class="steps">
+  <li>Create a public repository with <code>manifest.json</code> at its root and the rest of the app beside it.</li>
+  <li>Leave out <code>node_modules/</code>, <code>dist/</code> and your own <code>data/</code>. Ship only the templates (files starting with <code>_</code>) and any starter data a new install needs.</li>
+  <li>Add the <code>chrysalis-app</code> topic to the repository so people can find it on GitHub.</li>
+  <li>Check that it installs: in Chrysalis, <span class="ui">Import app</span> &gt; <span class="ui">Git repository</span> with your repository's address.</li>
+</ol>
+
+<h2>Add it to the Store</h2>
+<p>The Store's list is <a href="https://github.com/ProjectChrysalis/app-store/blob/main/apps.json"><code>apps.json</code></a> in the <a href="https://github.com/ProjectChrysalis/app-store">app-store</a> repository.</p>
+<ol class="steps">
+  <li>Fork the app-store repository and add an entry at the end of <code>apps.json</code>:
+<pre><code>{
+  "id": "reading-tracker",
+  "name": "Reading Tracker",
+  "description": "Books I am reading, with notes.",
+  "author": "Your name",
+  "repository": "https://github.com/you/reading-tracker",
+  "tags": ["books", "notes"],
+  "added": "2026-09-13"
+}</code></pre>
+  </li>
+  <li>Run <code>bun scripts/validate.ts --clone</code> in your fork. It checks every entry and installs yours from its repository.</li>
+  <li>Open a pull request.</li>
+</ol>
+<table>
+  <thead><tr><th>Field</th><th>Rules</th></tr></thead>
+  <tbody>
+    <tr><td><code>id</code></td><td>Unique. Lowercase letters, digits, <code>-</code> and <code>_</code>, up to 64 characters. It becomes the app's folder name when installed.</td></tr>
+    <tr><td><code>name</code></td><td>Up to 80 characters.</td></tr>
+    <tr><td><code>description</code></td><td>Up to 500 characters.</td></tr>
+    <tr><td><code>author</code></td><td>Up to 80 characters.</td></tr>
+    <tr><td><code>repository</code></td><td>The <code>https://</code> address of a public git repository.</td></tr>
+    <tr><td><code>ref</code></td><td>Optional. A branch or tag to install instead of the default branch.</td></tr>
+    <tr><td><code>tags</code></td><td>Optional. Up to 8 lowercase tags.</td></tr>
+    <tr><td><code>added</code></td><td>The day you add the entry, as <code>YYYY-MM-DD</code>. It decides what counts as new.</td></tr>
+  </tbody>
+</table>
+
+<h2>Releasing updates</h2>
+<p>No pull request is needed for updates. Push to your repository (or to the branch or tag the entry names) and every install is offered the new commits. Raise <code>version</code> in <code>manifest.json</code> when you release, so people see what they are updating to.</p>
+<ul>
+  <li>Keep your plugins' permissions as small as you can. On community apps, an update that adds a permission stops and asks the user.</li>
+  <li>Changing npm packages also asks the user on community apps, so batch those changes.</li>
+  <li>If a release needs a newer Chrysalis, say so with <code>engine</code> in the manifest.</li>
+  <li>Upgrade stored data in a plugin's <code>onAppUpdate</code> export rather than asking people to start over.</li>
+</ul>
+
+<h2>Official apps</h2>
+<p>Official apps are maintained by the Chrysalis team in the <a href="https://github.com/ProjectChrysalis">ProjectChrysalis</a> organization, in repositories whose names end in <code>-Chrysalis</code>. An app is official because of where it is installed from; nothing in an entry or a manifest can make an app official.</p>
+
+<h2>Removal</h2>
+<p>Apps that break, disappear or turn out to be harmful are taken off the list. Removing an entry does not uninstall the app from anyone's Chrysalis.</p>
