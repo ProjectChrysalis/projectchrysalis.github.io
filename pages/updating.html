@@ -8,7 +8,7 @@ order: 3
 <p class="lead">Chrysalis and your apps update separately. Neither kind of update touches your data.</p>
 
 <h2>Chrysalis itself</h2>
-<p>When a new version is out, admins see an <span class="ui">Update to X</span> button at the bottom of the launcher and in <span class="ui">Settings</span> &gt; <span class="ui">Server</span>. Chrysalis only checks when one of those opens, never in the background.</p>
+<p>When a new version is out, admins see an <span class="ui">Update to X</span> button at the bottom of the <a href="first-start.html#the-launcher">launcher</a> (the <span class="ui">Where to?</span> page every new tab opens on) and in <span class="ui">Settings</span> &gt; <span class="ui">Server</span>. There is no button while you are on the newest version. Chrysalis only checks when one of those pages opens, never in the background.</p>
 <table>
   <thead><tr><th>Install</th><th>How to update</th></tr></thead>
   <tbody>
@@ -76,7 +76,8 @@ order: 3
 <p>For community apps, an update stops and asks before it:</p>
 <ul>
   <li>installs, changes or removes npm packages, listing each one and flagging any that come from outside the public registry;</li>
-  <li>gives one of its plugins a permission it did not have before.</li>
+  <li>gives one of its plugins a permission it did not have before;</li>
+  <li>lets a plugin that can use the network reach a host its installed version did not list.</li>
 </ul>
 <p>Click <span class="ui">Allow and update</span> to go ahead. If the repository changes between that review and your click, Chrysalis refuses and asks you to check again, so you only ever approve what you saw. Official apps skip this review.</p>
 
