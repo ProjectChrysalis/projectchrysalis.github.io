@@ -63,7 +63,7 @@ order: 1
 <pre><code>const appId = decodeURIComponent(location.pathname.split("/").filter(Boolean)[2])
 const res = await fetch(`/v1/apps/${appId}/notes`)
 const { notes } = await res.json()</code></pre>
-<p>Images, fonts and other media from other websites cannot load directly. Serve them through one of your plugin's routes instead.</p>
+<p>Images, fonts and other media from other websites cannot load directly. For images, use the built-in proxy: <code>&lt;img src={`/v1/apps/${appId}/img?url=${encodeURIComponent(url)}`}&gt;</code> loads any <code>https://</code> image from a host that one of your plugins lists in <code>networkHosts</code> and has the <code>network</code> permission for. Other media goes through one of your plugin's routes.</p>
 
 <h2>Plugins</h2>
 <p>A plugin is a folder under <code>plugins/</code> with a <code>manifest.json</code> and a <code>plugin.js</code>. Plugins run on the server in a sandbox and can only do what their permissions allow.</p>
@@ -94,9 +94,9 @@ const { notes } = await res.json()</code></pre>
   <tbody>
     <tr><td><code>handleRoute(req, host)</code></td><td><code>routes</code></td><td>For requests to <code>/v1/apps/&lt;app&gt;/…</code>. <code>req</code> has <code>method</code>, <code>path</code>, <code>query</code> and <code>body</code>. Return <code>{ status, json }</code> or <code>{ status, text }</code>.</td></tr>
     <tr><td><code>TOOLS</code> and <code>handleTool(name, args, host)</code></td><td><code>tools</code></td><td>When a model calls one of the tools, returning <code>{ text, isError }</code>.</td></tr>
-    <tr><td><code>appTools(host)</code></td><td><code>tools</code></td><td>To add tools to other plugins' model requests that ask for them.</td></tr>
+    <tr><td><code>appTools(ctx, host)</code></td><td><code>tools</code></td><td>To add tools to other plugins' model requests that ask for them.</td></tr>
     <tr><td><code>llmRequest(ctx, host)</code></td><td><code>hooks</code> and <code>llm</code></td><td>Before another plugin's model request, returning changes to it. The manifest's <code>priority</code> orders several.</td></tr>
-    <tr><td><code>onTick(host)</code></td><td><code>schedule</code></td><td>On the timer the manifest sets with <code>"schedule": { "intervalMs": 60000 }</code>.</td></tr>
+    <tr><td><code>onTick(ctx, host)</code></td><td><code>schedule</code></td><td>On the timer the manifest sets with <code>"schedule": { "intervalMs": 60000 }</code>.</td></tr>
     <tr><td><code>onAppUpdate(ctx, host)</code></td><td></td><td>Once after an update lands, with the old and new versions, to upgrade stored data.</td></tr>
     <tr><td><code>uiPanel(ctx, host)</code></td><td></td><td>To describe a settings panel the app can render for the plugin.</td></tr>
   </tbody>
@@ -109,7 +109,7 @@ const { notes } = await res.json()</code></pre>
     <tr><td><code>host.fs</code></td><td><code>fs</code></td><td><code>read</code>, <code>readBase64</code>, <code>write</code>, <code>list</code> and <code>remove</code>, inside the app's <code>data</code> folder only.</td></tr>
     <tr><td><code>host.store</code></td><td><code>store</code></td><td><code>get</code>, <code>put</code>, <code>delete</code> and <code>keys</code> on the plugin's own saved values.</td></tr>
     <tr><td><code>host.llm</code></td><td><code>llm</code></td><td>Model calls through the user's connections, in two passes (below).</td></tr>
-    <tr><td><code>host.net</code></td><td><code>network</code></td><td>Web requests in two passes, like <code>host.llm</code>. List <code>networkHosts</code> in the manifest to limit where they may go.</td></tr>
+    <tr><td><code>host.net</code></td><td><code>network</code></td><td>Web requests in two passes, like <code>host.llm</code>, only to the hosts listed in the manifest's <code>networkHosts</code>.</td></tr>
     <tr><td><code>host.log</code></td><td></td><td>Write to the server log.</td></tr>
   </tbody>
 </table>
@@ -126,4 +126,4 @@ const { notes } = await res.json()</code></pre>
 
 <h2>Learn from a real app</h2>
 <p><a href="https://github.com/ProjectChrysalis/Roleplay-Chrysalis">Roleplay</a> is a large app built this way: its <code>plugins/</code> show routes, two-pass model calls and data layout, and its <code>src/</code> is a full React frontend.</p>
-<p>Ready to share it? See <a href="publish.html">Publish to the Store</a>.</p>
+<p>Ready to share it? See <a href="publish.html">Publish to the Store</a>. For how plugins run, streaming, tools and prompt hooks, see <a href="plugins.html">The plugin system</a>.</p>

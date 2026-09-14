@@ -24,7 +24,7 @@ order: 4
 <ul>
   <li><strong>Your workspace:</strong> your apps, their plugins and their data. It cannot read your model keys or other accounts.</li>
   <li><strong>A command shell</strong> that runs inside your browser tab, never on the server, with Python available. Turn it off with <code>agent.shell</code> in <a href="settings.html">config.yaml</a>.</li>
-  <li><strong>Internet access in that shell</strong> only when you turn it on in <span class="ui">Settings</span> &gt; <span class="ui">Agent</span>. Your own computer and local network stay blocked either way.</li>
+  <li><strong>Internet access in that shell</strong>, for things like <code>curl</code> and <code>pip</code>. It is on by default; turn it off in <span class="ui">Settings</span> &gt; <span class="ui">Agent</span>. Your own computer and local network stay blocked either way.</li>
   <li><strong>Web search</strong> once you add a search key in <span class="ui">Settings</span> &gt; <span class="ui">MCP servers</span>.</li>
   <li><strong>Tools from MCP servers</strong> you add in <span class="ui">Settings</span> &gt; <span class="ui">MCP servers</span>.</li>
 </ul>
@@ -32,3 +32,6 @@ order: 4
 
 <h2>Choosing its model</h2>
 <p>The agent uses any model from your <span class="ui">API connections</span>. Pick one in the agent's model menu; <span class="ui">Settings</span> &gt; <span class="ui">Agent</span> also holds its instructions and how it handles long sessions. Building apps works best with a strong coding model.</p>
+
+<h2>How it works</h2>
+<p>How edits reach an open app, and the tools the agent uses to check its own work, are on <a href="live-editing.html">Live editing</a>.</p>

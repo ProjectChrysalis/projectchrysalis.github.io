@@ -65,7 +65,7 @@ order: 1
     <tr><td><code>store</code></td><td>Keep its own small key and value storage.</td></tr>
     <tr><td><code>fs</code></td><td>Read and write files in the app's <code>data</code> folder.</td></tr>
     <tr><td><code>llm</code></td><td>Call models through your connections.</td></tr>
-    <tr><td><code>network</code></td><td>Make web requests, limited to the hosts it lists when it lists any.</td></tr>
+    <tr><td><code>network</code></td><td>Make web requests to the hosts its manifest lists. A plugin that lists none has no network.</td></tr>
     <tr><td><code>tools</code></td><td>Give models tools to call.</td></tr>
     <tr><td><code>schedule</code></td><td>Run on a timer.</td></tr>
     <tr><td><code>hooks</code></td><td>Adjust other plugins' model requests (together with <code>llm</code>).</td></tr>

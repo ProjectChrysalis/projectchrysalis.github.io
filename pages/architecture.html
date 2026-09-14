@@ -1,0 +1,81 @@
+<!--
+title: Architecture
+description: The parts of Chrysalis, where your files live, and what happens between clicking a button in an app and the reply showing up.
+section: How it works
+order: 1
+-->
+<h1>Architecture</h1>
+<p class="lead">Chrysalis is one program and a folder of files. The program serves a web page; everything you use inside that page is an app, and every app is plain files the agent can change.</p>
+
+<h2>The parts</h2>
+<div class="cards">
+  <div class="card"><strong>The engine</strong><span>The one program you run. It signs people in, keeps model connections and keys, answers every request over HTTP and one WebSocket, runs plugins, calls model providers and watches app files for changes.</span></div>
+  <div class="card"><strong>The shell</strong><span>The page you open in your browser: the launcher, tabs, settings and the agent's chat. Apps open inside it.</span></div>
+  <div class="card"><strong>Apps</strong><span>Folders in your workspace. The web page of an app runs in a sandboxed frame inside the shell.</span></div>
+  <div class="card"><strong>Plugins</strong><span>The server side of an app, run by the engine in a WebAssembly sandbox with the permissions you approved.</span></div>
+  <div class="card"><strong>The builder</strong><span>Turns an app's source code into the page you see, inside your browser, and pushes changes into open apps as you edit.</span></div>
+  <div class="card"><strong>The agent</strong><span>A coding agent with tools for reading and editing files, building apps, reading their console and running a command shell in your browser.</span></div>
+</div>
+
+<h2>Where your files live</h2>
+<p>Every account has its own folder under <code>data/users/</code> in the Chrysalis home folder (<code>chrysalis paths</code> prints it):</p>
+<pre><code>data/
+  users/&lt;name&gt;/            your workspace, a git repository
+    apps/&lt;app&gt;/
+      manifest.json
+      index.html, src/     the app's page
+      plugins/&lt;id&gt;/        the app's server code
+      data/                what the app stores
+      node_modules/, dist/ installed packages and build output, not in git
+    settings.json          active app, plugin approvals
+    persona.md
+  credentials/&lt;name&gt;/      outside the workspace
+    auth.json              model keys
+    connections.json       model connections
+    mcp.json               MCP servers
+    app-upstream/          each app's install source and update baseline
+    sandbox.json           the agent shell's internet switch</code></pre>
+<p>The split matters. The agent, its shell and every app can only reach the workspace, so keys, MCP servers and the files updates compare against are out of reach by where they are stored, not by a rule each tool has to remember.</p>
+
+<h2>A request, start to finish</h2>
+<p>Here is what happens when you send a message in an app like Roleplay:</p>
+<ol class="steps">
+  <li>The app's page calls <code>fetch("/v1/apps/roleplay/…")</code>. The page runs in a frame that cannot make network requests, so a small bridge script in the frame hands the request to the shell.</li>
+  <li>The shell checks the path against the list of routes apps may use, then sends it with your session. The engine checks the same list again.</li>
+  <li>The engine offers the request to the app's plugins. Each plugin's <code>handleRoute</code> runs in the sandbox until one answers.</li>
+  <li>The plugin asks for a model reply and returns right away. The engine applies any changes other plugins in the app make to model requests, adds the tools they offer, and calls the provider with your key. The text streams to the page over the WebSocket as it arrives.</li>
+  <li>When the reply is done, the engine runs the plugin again with the result. The plugin saves the chat to the app's <code>data/</code> folder and answers the page.</li>
+  <li>The engine notices the changed file and tells every open copy of the app, so a second tab or your phone can refresh.</li>
+</ol>
+<p><a href="plugins.html">The plugin system</a> covers steps 3 to 5 in detail.</p>
+
+<h2>Why apps run in a frame</h2>
+<p>An app's page is served from <code>/app/&lt;name&gt;/&lt;app&gt;/</code> into an <code>iframe</code> with the <code>sandbox</code> attribute and no same-origin access. That gives it an opaque origin: no cookies, no session, no view into the shell. Its content security policy sets <code>connect-src 'none'</code>, so it cannot open connections of its own.</p>
+<p>The bridge script that runs first in every app page replaces <code>fetch</code>, <code>WebSocket</code>, <code>localStorage</code>, <code>sessionStorage</code> and <code>document.cookie</code> with versions that ask the shell. To the app they behave like the real thing:</p>
+<ul>
+  <li><code>fetch</code> reaches the app's own <code>/v1/apps/&lt;app&gt;/…</code> routes and a short shared list: reading the model list, generating images and speech, embeddings settings and shared assets.</li>
+  <li>A <code>WebSocket</code> to <code>/v1/ws</code> receives only this app's events.</li>
+  <li><code>localStorage</code> is kept in the shell's own browser storage, separately for each account and app.</li>
+</ul>
+<p>Images and other media from outside websites cannot load directly. Apps load images through <code>/v1/apps/&lt;app&gt;/img?url=…</code>, which fetches only from hosts the app's plugins are allowed to reach, and serve other media through a plugin route. The full list of limits is on <a href="security.html#apps">Security and privacy</a>.</p>
+
+<h2>Why the browser does the building</h2>
+<p>Two jobs that run untrusted code happen in your browser instead of on the machine running Chrysalis:</p>
+<ul>
+  <li><strong>Building apps.</strong> Bundling, Tailwind and any Tailwind plugin an app brings run in a sandboxed builder frame. The engine only reads the app's files for it and writes the output back. App packages are downloaded with their install scripts turned off, so nothing from npm runs as a program on your computer.</li>
+  <li><strong>The agent's shell.</strong> Commands run in a WebAssembly shell with Python, inside a sandboxed frame, on every platform. Changed files are synced back through the engine.</li>
+</ul>
+<p>The trade-off: both need a Chrysalis tab open. With no page open, apps do not rebuild and the agent has no shell, though its file tools still work.</p>
+
+<h2>What the engine is built on</h2>
+<table>
+  <thead><tr><th>Part</th><th>Uses</th></tr></thead>
+  <tbody>
+    <tr><td>Engine</td><td>Bun, a single executable per platform (a native library inside the Android app)</td></tr>
+    <tr><td>Plugin sandbox</td><td>QuickJS compiled to WebAssembly, in a worker thread</td></tr>
+    <tr><td>Builder</td><td>esbuild (WebAssembly), Babel's React Refresh transform, Tailwind v4</td></tr>
+    <tr><td>Agent shell</td><td>A WebAssembly shell with bash-style commands and Python (Pyodide)</td></tr>
+    <tr><td>Workspace history and app installs</td><td>A git implementation in JavaScript, so no git program is needed</td></tr>
+    <tr><td>Shell and apps</td><td>React and Tailwind</td></tr>
+  </tbody>
+</table>

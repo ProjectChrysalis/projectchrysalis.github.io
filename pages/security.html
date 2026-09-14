@@ -29,7 +29,7 @@ order: 1
 <ul>
   <li>Installing or importing shows every plugin's permissions first; the install is the approval.</li>
   <li>A community app's update that asks for a new permission stops and asks you again.</li>
-  <li>File access is limited to the app's own <code>data</code> folder. Network access can be limited to the hosts a plugin lists, and your computer and local network are blocked.</li>
+  <li>File access is limited to the app's own <code>data</code> folder. Network access goes only to the hosts a plugin lists in its manifest, and your computer and local network are blocked.</li>
   <li>You can turn any plugin off, or remove it, from the app's <span class="ui">Plugins</span> dialog.</li>
 </ul>
 <div class="warn">
@@ -40,7 +40,7 @@ order: 1
 <p>An exported backup contains the app's data, so treat it like the data itself. When you import one, Chrysalis unpacks it into a separate folder, refuses files that try to land outside it, and shows you what it contains before installing. An app restored from a file is never marked official, whatever it claims.</p>
 
 <h2>The agent</h2>
-<p>The agent works inside your workspace. Its command shell runs in your browser tab, not on the server, and its internet access is off until you turn it on. Every file it writes is saved to your workspace history.</p>
+<p>The agent works inside your workspace. Its command shell runs in your browser tab, not on the server. The shell can reach the internet (never your computer or local network) until you turn that off in <span class="ui">Settings</span> &gt; <span class="ui">Agent</span>. Every file it writes is saved to your workspace history.</p>
 
 <h2>Report a vulnerability</h2>
 <p>Please report security problems privately through <a href="https://github.com/ProjectChrysalis/Chrysalis-Engine/security/advisories/new">GitHub's security advisories</a>, not in a public issue or on Discord. Include your Chrysalis version (<code>chrysalis --version</code>), how you run it, and the steps to reproduce.</p>

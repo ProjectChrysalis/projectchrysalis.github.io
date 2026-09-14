@@ -1,0 +1,81 @@
+<!--
+title: Live editing
+description: How a saved file becomes a change in an app that is already open, without a reload and without losing your place.
+section: How it works
+order: 2
+-->
+<h1>Live editing</h1>
+<p class="lead">When the agent (or you) saves a file in an app, the open app changes in place. Components keep their state, styles swap without a flash, and a chat you were halfway through stays on screen.</p>
+
+<h2>The loop</h2>
+<ol class="steps">
+  <li><strong>A file is saved.</strong> The agent's file tools write it into the workspace and commit it to history.</li>
+  <li><strong>The engine notices.</strong> A file watcher on your apps collects the changed paths for a moment, then tells the shell over the WebSocket which app's source changed.</li>
+  <li><strong>The builder rebuilds only what changed.</strong> The shell keeps a sandboxed builder frame for each app on screen. It rebuilds the changed source files and writes a small update file into the app's <code>dist/</code> folder through the engine.</li>
+  <li><strong>The open app swaps the code.</strong> The app's page loads the update and replaces just those modules. React Refresh re-renders the affected components with their state intact.</li>
+  <li><strong>The agent checks its work.</strong> It asks for the build result and any errors the page threw, and fixes them before telling you it is done.</li>
+</ol>
+
+<h2>What changes where</h2>
+<table>
+  <thead><tr><th>You change</th><th>What happens</th></tr></thead>
+  <tbody>
+    <tr><td><code>src/</code> components</td><td>Hot update. Components re-render and keep their state.</td></tr>
+    <tr><td>CSS, including Tailwind classes anywhere in the source</td><td>The stylesheet is swapped in place.</td></tr>
+    <tr><td>A module that is not only components (a store, a helper with side effects)</td><td>The update climbs to the nearest module that can take it: one that exports only components, or one that calls <code>import.meta.hot.accept()</code>. If none can, the page reloads.</td></tr>
+    <tr><td><code>index.html</code>, <code>package.json</code>, lockfiles, <code>tsconfig.json</code>, <code>.env</code></td><td>Full rebuild and reload. New packages are installed first with <code>app_deps</code>, which the agent runs after editing <code>package.json</code>; builds wait until an install finishes.</td></tr>
+    <tr><td><code>plugins/</code></td><td>No build. The next request runs the new code (see below).</td></tr>
+    <tr><td><code>data/</code></td><td>No build. Open pages get a <code>look_changed</code> event and can re-read their data.</td></tr>
+  </tbody>
+</table>
+
+<h2>How the builder works</h2>
+<p>The builder is the part of a dev server an app needs, running in your browser:</p>
+<ul>
+  <li>Every source file becomes its own module. TypeScript and JSX go through esbuild (compiled to WebAssembly), and components get Babel's React Refresh transform so they can be swapped live.</li>
+  <li>Everything from <code>node_modules</code> is bundled once into a single dependencies file. It is only rebuilt when the packages change, which keeps updates small.</li>
+  <li>Tailwind v4 runs as the real compiler over the app's files, so any class the agent writes works right away.</li>
+  <li>The output is plain files in <code>dist/</code>: the page, the dependencies, a snapshot of every module and numbered update files. After 20 updates the builder writes a fresh snapshot.</li>
+</ul>
+<p>Module resolution follows what apps expect from a normal bundler: relative paths, <code>tsconfig</code> paths, the <code>@</code> alias for <code>src</code>, and packages by their <code>exports</code>, <code>browser</code>, <code>module</code> and <code>main</code> fields. The full list of supported imports is on <a href="build-apps.html#the-frontend">Build an app</a>.</p>
+
+<h3>One tab builds at a time</h3>
+<p>With the same app open in several tabs or devices, one holds the build lease and the others receive its output. If that tab closes or hangs, another takes over. Every open copy loads the same update files, so they all stay in step.</p>
+
+<h3>When a page reloads instead</h3>
+<p>Hot updates are always on, but some changes cannot be applied in place. The page reloads when:</p>
+<ul>
+  <li>a changed module declines hot updates, or nothing above it can accept one;</li>
+  <li>a tab was away long enough that the update files it missed were folded into a new snapshot;</li>
+  <li>the app was fully rebuilt, for example with the <span class="ui">Rebuild</span> button.</li>
+</ul>
+<p>Code that uses top-level <code>await</code> cannot be swapped as a module, so those apps are built as one production bundle and reload on each change.</p>
+
+<h2>Errors</h2>
+<p>A build error covers the app with an overlay showing the file, line and message. Fix the file and it clears on the next build, or close it with <span class="ui">Close</span> or <kbd>Esc</kbd>. Runtime errors the page throws (uncaught exceptions, unhandled promise rejections and <code>console.error</code>) are collected too.</p>
+<p>The agent reads both through its tools:</p>
+<table>
+  <thead><tr><th>Tool</th><th>What it does</th></tr></thead>
+  <tbody>
+    <tr><td><code>app_check</code></td><td>Waits for the current sources to build and returns the errors with file and line, plus runtime errors from the open page.</td></tr>
+    <tr><td><code>app_console</code></td><td>Reads recent console output from the app's open pages, so the agent can add a <code>console.log</code> and see what happened.</td></tr>
+    <tr><td><code>app_rebuild</code></td><td>Forces a full rebuild when an app looks stale.</td></tr>
+    <tr><td><code>app_deps</code></td><td>Installs or removes packages.</td></tr>
+  </tbody>
+</table>
+<p>That is why the agent works best with the app open beside it: the open page is what builds the app and reports its errors.</p>
+
+<h2>Plugins update on the next request</h2>
+<p>Plugins are not built. The engine reads each plugin's <code>plugin.js</code> and <code>manifest.json</code> fresh whenever either file changes, and every call evaluates the module from scratch in the sandbox, so the next request runs the new code. Changes to a plugin's permissions take effect the same way.</p>
+
+<h2>Data changes reach open pages</h2>
+<p>When anything under an app's <code>data/</code> folder changes, open copies of the app receive a <code>look_changed</code> event with the paths. The app decides what to do; Roleplay re-reads the affected characters, chats or lorebooks. This is how a character the agent edits shows up in an open chat without a refresh.</p>
+<pre><code>const ws = new WebSocket(`${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/v1/ws`)
+ws.onmessage = (ev) =&gt; {
+  const frame = JSON.parse(ev.data)
+  // payload.paths are relative to the app, like "data/notes/today.json"
+  if (frame.type === "look_changed") reloadNotes(frame.payload.paths)
+}</code></pre>
+
+<h2>Every change is in history</h2>
+<p>Your workspace is a git repository. The agent's file tools commit each write with your name and <code>(via agent)</code>, so a live edit you do not like is one request away from being undone: ask the agent to put the file back. App updates and imports are committed to the same history.</p>

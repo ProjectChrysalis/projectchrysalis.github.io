@@ -1,0 +1,69 @@
+<!--
+title: What you can build
+description: The kinds of apps Chrysalis can run, the building blocks they use, and the limits worth knowing before you start.
+section: Build
+order: 0
+-->
+<h1>What you can build</h1>
+<p class="lead">A Chrysalis app is a full web app with a server side that can talk to your models. If it fits in a browser tab, you can probably build it by asking.</p>
+
+<h2>Ideas</h2>
+<div class="cards">
+  <div class="card"><strong>Visual novels and story games</strong><span>Scenes, sprites, choices and a narrator played by your model, with saves in the app's data folder.</span></div>
+  <div class="card"><strong>Roleplay and chat tools</strong><span>Character chats, group scenes, memory and lorebooks. The official Roleplay app is built exactly this way.</span></div>
+  <div class="card"><strong>Game masters with tools</strong><span>A model that rolls dice, tracks inventory or looks up rules by calling your plugin's functions.</span></div>
+  <div class="card"><strong>Trackers and journals</strong><span>Books, habits, workouts or notes, with a model that summarizes your week on a timer.</span></div>
+  <div class="card"><strong>Dashboards</strong><span>Pull data from public web APIs through a plugin and chart it with any npm charting library.</span></div>
+  <div class="card"><strong>Writing and study tools</strong><span>Draft editors, flashcards generated from your notes, and search over your documents with embeddings.</span></div>
+  <div class="card"><strong>Games</strong><span>Canvas, WebGL or DOM games built with any npm package, with an AI opponent or level generator.</span></div>
+  <div class="card"><strong>Add-ons for other apps</strong><span>A plugin dropped into an existing app that adds memory, translation or a house style to every prompt it sends.</span></div>
+</div>
+
+<h2>The building blocks</h2>
+<table>
+  <thead><tr><th>Your app needs to</th><th>Use</th></tr></thead>
+  <tbody>
+    <tr><td>Show a UI</td><td>React and Tailwind in <code>src/</code>, plus any npm package. See <a href="build-apps.html#the-frontend">the frontend</a>.</td></tr>
+    <tr><td>Save data</td><td>A plugin with <code>fs</code> writing JSON into <code>data/</code>, or <code>store</code> for small values.</td></tr>
+    <tr><td>Get text from a model</td><td>A plugin with <code>llm</code> calling <code>host.llm.request</code>. Works with every provider you connected.</td></tr>
+    <tr><td>Show a reply as it is written</td><td>A <code>stream</code> descriptor on the request, and <code>app_stream</code> events on the page. See <a href="plugins.html#streaming-replies-to-the-page">streaming</a>.</td></tr>
+    <tr><td>Get structured data from a model</td><td>A <code>schema</code> on the request; the parsed object comes back in <code>json</code>.</td></tr>
+    <tr><td>Let the model take actions</td><td>A plugin with <code>tools</code>. See <a href="plugins.html#giving-models-tools">tools</a>.</td></tr>
+    <tr><td>Search by meaning</td><td><code>host.llm.embed</code> in a route, with the vectors saved in <code>data/</code>.</td></tr>
+    <tr><td>Generate images</td><td><code>POST /v1/images</code> with a <code>prompt</code> from the page. The image is saved as an asset and its URL returned.</td></tr>
+    <tr><td>Speak text</td><td><code>POST /v1/audio/speech</code> with <code>text</code> from the page, using your speech settings, or free online voices when none are set up.</td></tr>
+    <tr><td>Call a web API</td><td>A plugin with <code>network</code> and the API's host in <code>networkHosts</code>. See <a href="plugins.html#web-requests">web requests</a>.</td></tr>
+    <tr><td>Show pictures from the web</td><td><code>/v1/apps/&lt;app&gt;/img?url=…</code> as the image source, for hosts a plugin in the app lists in <code>networkHosts</code>.</td></tr>
+    <tr><td>Do work in the background</td><td>A plugin with <code>schedule</code> and an <code>onTick</code> export.</td></tr>
+    <tr><td>Import files people upload</td><td>A route with the <code>zip</code> permission for archives, or plain JSON bodies up to 1 MB.</td></tr>
+    <tr><td>Change another plugin's prompts</td><td>A plugin with <code>hooks</code> and <code>llm</code> exporting <code>llmRequest</code>. See <a href="plugins.html#adjusting-other-plugins-prompts">prompt hooks</a>.</td></tr>
+    <tr><td>Update live when data changes</td><td>Listen for <code>look_changed</code> on the WebSocket. See <a href="live-editing.html#data-changes-reach-open-pages">data changes</a>.</td></tr>
+  </tbody>
+</table>
+
+<h2>Ask for it</h2>
+<p>Click <span class="ui">New app</span>, then describe what you want to the <a href="agent.html">agent</a>. Being specific about data and behavior gets you further than describing looks:</p>
+<ul>
+  <li>"Build a visual novel app. Scenes are JSON files in data/scenes with a background, characters, lines and choices. Add a button that asks the model to write the next scene."</li>
+  <li>"Make a reading tracker. Save each book as a file in data/books. Every Sunday, summarize what I read that week."</li>
+  <li>"Add a plugin to Roleplay that keeps a list of facts about me and adds them to every prompt."</li>
+  <li>"Make a dashboard that shows the weather for my city from api.open-meteo.com, refreshed every 10 minutes."</li>
+</ul>
+<p>Keep the app open beside the agent while it works. The open page builds the app and reports errors back, so the agent can fix its own mistakes.</p>
+
+<h2>Limits worth knowing</h2>
+<ul>
+  <li><strong>The page cannot reach the internet directly.</strong> Web APIs go through a plugin, and images through the app's image proxy.</li>
+  <li><strong>Plugins are short and synchronous.</strong> A pass runs for up to 10 seconds with 64 MB of memory, and a request can wait on at most two rounds of model or web calls. Long jobs are split across requests or timers.</li>
+  <li><strong>No native programs.</strong> Apps cannot start processes on your computer. Tools that need one can run as an MCP server you add in <span class="ui">Settings</span>.</li>
+  <li><strong>No bundler plugins.</strong> Build tool configs do not run, so formats that need a compiler plugin, such as single-file Vue or Svelte components, are not supported. React works out of the box.</li>
+  <li><strong>No peer-to-peer connections.</strong> Chrysalis blocks WebRTC in app pages on browsers that support blocking it.</li>
+  <li><strong>Building needs an open tab.</strong> Apps build in your browser, so a change lands when a Chrysalis page is open.</li>
+</ul>
+
+<h2>Next</h2>
+<ul>
+  <li><a href="build-apps.html">Build an app</a>: the files, manifest and plugin API.</li>
+  <li><a href="architecture.html">Architecture</a>: how the pieces fit together.</li>
+  <li><a href="publish.html">Publish to the Store</a>: share what you made.</li>
+</ul>

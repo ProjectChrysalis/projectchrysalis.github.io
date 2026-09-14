@@ -17,7 +17,7 @@ const ENGINE = "https://github.com/ProjectChrysalis/Chrysalis-Engine";
 const DISCORD = "https://discord.gg/maFVqyeD4Q";
 
 /** Sidebar sections, in order. */
-const SECTIONS = ["Start here", "Using Chrysalis", "Apps", "Build", "Help"];
+const SECTIONS = ["Start here", "Using Chrysalis", "Apps", "Build", "How it works", "Help"];
 
 interface Page {
   file: string;

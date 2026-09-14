@@ -1,0 +1,168 @@
+<!--
+title: The plugin system
+description: How plugins run in the sandbox, how model and web calls work in passes, and how to stream replies, give models tools and adjust other plugins' prompts.
+section: How it works
+order: 3
+-->
+<h1>The plugin system</h1>
+<p class="lead">Plugins are the server side of an app: they store data, call models and reach web APIs. This page explains how they run and the patterns bigger apps use. For the list of exports and <code>host</code> methods, see <a href="build-apps.html#plugins">Build an app</a>.</p>
+
+<h2>How a plugin runs</h2>
+<p>Every plugin call runs in QuickJS, a small JavaScript engine compiled to WebAssembly, inside a worker thread of the engine:</p>
+<ul>
+  <li><strong>Fresh every time.</strong> Each call loads <code>plugin.js</code> from scratch. Nothing kept in a module variable survives to the next request, so state belongs in <code>host.store</code> or <code>host.fs</code>.</li>
+  <li><strong>Synchronous.</strong> Exports are plain functions. There is no <code>await</code> on the network or a model; those calls work in passes (below). <code>fetch</code> does not exist inside the sandbox.</li>
+  <li><strong>Bounded.</strong> One pass may run for 10 seconds and use 64 MB of memory. A plugin that runs over, crashes or corrupts the runtime loses only its worker, which restarts on the next call. The engine keeps serving.</li>
+</ul>
+<p>Modern syntax is fine: QuickJS supports ES2023. Helper functions belong at the top level of the module; a function declared inside a block is only visible in that block.</p>
+
+<h2>Where plugins come from</h2>
+<p>Each folder in an app's <code>plugins/</code> is one plugin, known to the engine as <code>&lt;app&gt;__&lt;folder&gt;</code>. Its manifest declares what it needs:</p>
+<pre><code>{
+  "name": "Weather",
+  "version": "1.2.0",
+  "description": "Current weather for the chat's location.",
+  "permissions": ["routes", "network", "store"],
+  "networkHosts": ["api.open-meteo.com"],
+  "schedule": { "intervalMs": 600000 },
+  "priority": 0
+}</code></pre>
+<p>What a plugin may actually use depends on where it came from:</p>
+<ul>
+  <li>Plugins you or the agent write get the permissions their manifest lists.</li>
+  <li>Plugins from the Store, a git repository, a backup or a plugin import only get the permissions you approved when you installed them. A community app update that asks for more stops and asks again.</li>
+</ul>
+<p>Any plugin can be turned off in the app's <span class="ui">Plugins</span> dialog. A disabled plugin gets no requests, tools, hooks or timers.</p>
+
+<h2>Requests go to the first plugin that answers</h2>
+<p>A request to <code>/v1/apps/&lt;app&gt;/&lt;path&gt;</code> is offered to each enabled plugin with the <code>routes</code> permission in turn. The first <code>handleRoute</code> that returns a response wins; returning <code>null</code> passes. Give each plugin its own path prefix so they never compete.</p>
+<ul>
+  <li>Request bodies are capped at 1 MB, or 220 MB for paths under <code>/import/</code>. JSON bodies arrive parsed.</li>
+  <li>A response is <code>{ status, json }</code> or <code>{ status, text, contentType }</code>. Text responses are served with a sandboxing content security policy, so a route can never act as a live page.</li>
+  <li>When a route answers with a status below 400, the changes it made to the app's <code>data/</code> are committed to workspace history, so they can be undone like any other edit.</li>
+</ul>
+
+<h2>Model and web calls take passes</h2>
+<p>Because plugins are synchronous, anything slow happens between two runs of the same function:</p>
+<ol class="steps">
+  <li><strong>Pass 1.</strong> The plugin registers what it needs with <code>host.llm.request(key, request)</code>, <code>host.net.request(key, request)</code> or <code>host.llm.embed(key, request)</code>, and returns <code>{ __llmPending: true }</code>.</li>
+  <li><strong>The engine does the work.</strong> It runs the requests one after another with your keys, which never enter the sandbox.</li>
+  <li><strong>Pass 2.</strong> The engine calls the same function again with the same request. The answers are in <code>host.llm.results[key]</code>, <code>host.net.results[key]</code> and <code>host.llm.embedResults[key]</code>. The plugin can finish, or ask for more.</li>
+</ol>
+<p>A call gets at most three passes, so a route can wait on two rounds of requests before it must answer. One pass may register up to 16 model requests, 32 web requests and 8 embedding requests.</p>
+
+<h3>Carry state between passes</h3>
+<p>Module variables reset between passes. Return a <code>stash</code> with the pending marker and it comes back on the request as <code>req.stash</code>:</p>
+<pre><code>export function handleRoute(req, host) {
+  if (req.method !== "POST" || req.path !== "/summarize") return null
+
+  const done = host.llm.results.summary
+  if (done) {
+    host.fs.write(`summaries/${req.stash.day}.md`, done.text)
+    return { status: 200, json: { text: done.text } }
+  }
+
+  const day = new Date().toISOString().slice(0, 10)
+  host.llm.request("summary", {
+    systemPrompt: "Summarize these notes in three sentences.",
+    messages: [{ role: "user", content: String(req.body.notes) }],
+  })
+  return { __llmPending: true, stash: { day } }
+}</code></pre>
+<div class="warn">
+  <p>Store and file writes take effect on every pass, including the first. Write only once you have the answer, as above, so a retried first pass cannot save something twice.</p>
+</div>
+
+<h2>Model requests</h2>
+<p><code>host.llm.request</code> takes the same request whichever provider you use:</p>
+<table>
+  <thead><tr><th>Field</th><th></th></tr></thead>
+  <tbody>
+    <tr><td><code>messages</code></td><td>Required. <code>{ role, content }</code> turns with <code>user</code>, <code>assistant</code> or <code>system</code> roles.</td></tr>
+    <tr><td><code>systemPrompt</code></td><td>Optional system prompt.</td></tr>
+    <tr><td><code>model</code></td><td><code>"provider/model-id"</code> from the model list, or leave it out for the user's default.</td></tr>
+    <tr><td><code>reasoning</code></td><td><code>off</code>, <code>minimal</code>, <code>low</code>, <code>medium</code>, <code>high</code>, <code>xhigh</code> or <code>max</code> on models that think.</td></tr>
+    <tr><td><code>presetParams</code></td><td><code>{ temperature, max_tokens, params }</code>, where <code>params</code> passes sampler settings like <code>top_p</code> or <code>min_p</code> to providers that accept them.</td></tr>
+    <tr><td><code>schema</code></td><td>A JSON Schema with an object root. The model is made to answer in that shape and the parsed result lands in <code>json</code>.</td></tr>
+    <tr><td><code>tools</code>, <code>wantsTools</code></td><td>Tools the model may call (below).</td></tr>
+    <tr><td><code>stream</code></td><td><code>{ chatId, name }</code> to stream the reply to the app's page (below).</td></tr>
+  </tbody>
+</table>
+<p>The result has <code>text</code>, <code>reasoning</code> when the model thought out loud, <code>json</code> for a schema, the <code>model</code> that answered, and <code>usage</code> with tokens and cost. A failed call has <code>model: "error"</code> and the reason in <code>error</code>.</p>
+
+<h2>Streaming replies to the page</h2>
+<p>Add a <code>stream</code> descriptor and the reply streams to the app's open pages while the plugin waits for the whole thing:</p>
+<pre><code>host.llm.request("reply", {
+  messages,
+  stream: { chatId: chat.id, name: character.name },
+})</code></pre>
+<p>The page listens on the WebSocket for <code>app_stream</code> events. Each carries the <code>chatId</code> and <code>name</code> with one of <code>delta</code> (answer text), <code>thinking</code> (reasoning text) or <code>tool</code> (a tool call starting or ending):</p>
+<pre><code>ws.onmessage = (ev) =&gt; {
+  const { type, payload } = JSON.parse(ev.data)
+  if (type !== "app_stream" || payload.chatId !== openChatId) return
+  if (payload.delta) appendToBubble(payload.delta)
+}</code></pre>
+<p>To stop a reply, post <code>{ chatId }</code> to <code>/v1/apps/&lt;app&gt;/__abort</code>. The provider stream is cancelled and the plugin's second pass receives an empty result, so the page decides what to keep.</p>
+
+<h2>Giving models tools</h2>
+<p>A plugin with the <code>tools</code> permission can let a model call its functions. List the tools on the request and handle calls in <code>handleTool</code>:</p>
+<pre><code>const ROLL = {
+  name: "roll_dice",
+  description: "Roll dice written like 2d6.",
+  parameters: { type: "object", properties: { dice: { type: "string" } }, required: ["dice"] },
+}
+
+export function handleTool(name, args, host) {
+  if (name !== "roll_dice") return { text: "unknown tool", isError: true }
+  const [count, sides] = args.dice.split("d").map(Number)
+  let total = 0
+  for (let i = 0; i &lt; count; i++) total += 1 + Math.floor(Math.random() * sides)
+  return { text: String(total) }
+}
+
+// in a route: host.llm.request("reply", { messages, tools: [ROLL] })</code></pre>
+<p>The engine runs the tool loop: each call the model makes runs <code>handleTool</code> in its own sandbox call, which can itself use <code>host.net</code> in passes. Up to 16 tools fit on one request, with names made of letters, digits, <code>_</code> and <code>-</code>.</p>
+
+<h3>Tools from other plugins</h3>
+<p>A dedicated tools plugin can offer tools to every model request in its app. It exports <code>appTools(ctx, host)</code> returning <code>{ tools: [...] }</code>, and any sibling plugin that marks a request with <code>wantsTools: true</code> gets them, with calls routed back to the plugin that offered each one. Roleplay works this way: its chat plugin asks for tools, and its separate tools plugin supplies dice, pictures and custom tools. Turn the tools plugin off and tool calling is gone.</p>
+
+<h2>Adjusting other plugins' prompts</h2>
+<p>A plugin with both <code>hooks</code> and <code>llm</code> can export <code>llmRequest(ctx, host)</code>. It runs before every model request another plugin in the same app makes, sees the request as <code>ctx.request</code> (with <code>ctx.plugin</code> and <code>ctx.key</code> naming who asked), and returns the fields to change:</p>
+<pre><code>export function llmRequest(ctx, host) {
+  const facts = host.store.get("facts") || []
+  if (!facts.length) return null
+  return {
+    systemPrompt: `${ctx.request.systemPrompt || ""}\n\nThings to remember:\n${facts.join("\n")}`,
+  }
+}</code></pre>
+<ul>
+  <li>Only <code>messages</code>, <code>systemPrompt</code>, <code>model</code>, <code>sessionId</code>, <code>reasoning</code>, <code>thinkingBudget</code>, <code>reasoningTags</code>, <code>assistantPrefill</code>, <code>promptFormat</code>, <code>presetParams</code> and <code>schema</code> can be changed. Tools, streaming and cancelling stay with the engine.</li>
+  <li>Several hooks run in order of the manifest's <code>priority</code>, lowest first, so the highest has the last word. Ties go by plugin id.</li>
+  <li>A hook that crashes is skipped and the request goes ahead. Model requests a hook makes itself are not hooked again.</li>
+</ul>
+<p>This is how you add a feature to an app without touching its code: drop in a plugin that adds memory, a style guide or a translation step to every prompt.</p>
+
+<h2>Web requests</h2>
+<p><code>host.net.request(key, { url, method, headers, body, form, timeoutMs, maxBytes, json, binary })</code> works in passes like a model call. The result has <code>ok</code>, <code>status</code>, <code>headers</code>, the final <code>url</code>, and <code>text</code>, <code>json</code> or <code>base64</code>.</p>
+<ul>
+  <li><strong>Only listed hosts.</strong> Requests go only to hosts in the manifest's <code>networkHosts</code>, exact names or <code>*.example.com</code>. A plugin that lists none has no network at all.</li>
+  <li><strong>Never your network.</strong> Addresses on your computer or local network are refused, and each redirect is checked again (up to 5).</li>
+  <li><strong>No Chrysalis credentials.</strong> Requests carry only the headers the plugin sets.</li>
+  <li><strong>Limits.</strong> 15 seconds by default and 60 at most; 5 MB of response by default and 20 MB at most.</li>
+</ul>
+
+<h2>Embeddings</h2>
+<p>Routes can turn text into vectors with <code>host.llm.embed(key, { texts, model })</code> on one pass and read <code>host.llm.embedResults[key]</code>, an array of number arrays, on the next. Store the vectors with <code>host.fs</code> to build search or long-term memory. The embedding model comes from <span class="ui">Settings</span> unless the request names one.</p>
+
+<h2>Timers, updates and panels</h2>
+<table>
+  <thead><tr><th>Export</th><th>What it is for</th></tr></thead>
+  <tbody>
+    <tr><td><code>onTick(ctx, host)</code></td><td>Background work on the manifest's <code>schedule.intervalMs</code>, at least every 5 seconds. Needs the <code>schedule</code> permission. Timers are set up for the active app when Chrysalis first gets a signed-in request after starting.</td></tr>
+    <tr><td><code>onAppUpdate(ctx, host)</code></td><td>Runs once after an update lands, with <code>ctx.from</code> and <code>ctx.to</code> versions, to upgrade stored data.</td></tr>
+    <tr><td><code>uiPanel(ctx, host)</code></td><td>Returns a description of a settings panel with at least a <code>label</code>. The app lists every plugin's panel from <code>/v1/apps/&lt;app&gt;/__panels</code> and renders them.</td></tr>
+  </tbody>
+</table>
+
+<h2>Reading uploaded zips</h2>
+<p>Importers use the <code>zip</code> permission. When a request body includes <code>zipBase64</code>, <code>host.zip.entries()</code> returns the archive's text files as <code>{ "path": "contents" }</code>, with binary files marked. Archives are checked before unpacking: at most 200 MB, 5,000 files and 256 MB uncompressed, and no paths that climb out.</p>
