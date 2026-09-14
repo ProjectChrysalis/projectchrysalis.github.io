@@ -852,9 +852,10 @@ a.card:hover {
 
 .showcase {
   width: 100%;
-  max-width: 1120px;
+  max-width: 880px;
   margin: 0 auto;
   padding: 8px 24px 56px;
+  text-align: center;
 }
 .showcase h2 {
   margin: 0 0 6px;
@@ -862,7 +863,8 @@ a.card:hover {
   font-weight: 600;
 }
 .showcase p {
-  margin: 0 0 16px;
+  max-width: 620px;
+  margin: 0 auto 16px;
   color: var(--c-ink-muted);
 }
 .showcase-video {

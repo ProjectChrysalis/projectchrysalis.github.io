@@ -29,7 +29,7 @@ order: 0
     <tr><td>Show a reply as it is written</td><td>A <code>stream</code> descriptor on the request, and <code>app_stream</code> events on the page. See <a href="plugins.html#streaming-replies-to-the-page">streaming</a>.</td></tr>
     <tr><td>Get structured data from a model</td><td>A <code>schema</code> on the request; the parsed object comes back in <code>json</code>.</td></tr>
     <tr><td>Let the model take actions</td><td>A plugin with <code>tools</code>. See <a href="plugins.html#giving-models-tools">tools</a>.</td></tr>
-    <tr><td>Search by meaning</td><td><code>host.llm.embed</code> in a route, with the vectors saved in <code>data/</code>.</td></tr>
+    <tr><td>Search by meaning</td><td><code>host.llm.embed</code> in a plugin, with the vectors saved in <code>data/</code>.</td></tr>
     <tr><td>Generate images</td><td><code>POST /v1/images</code> with a <code>prompt</code> from the page. The image is saved as an asset and its URL returned.</td></tr>
     <tr><td>Speak text</td><td><code>POST /v1/audio/speech</code> with <code>text</code> from the page, using your speech settings, or free online voices when none are set up.</td></tr>
     <tr><td>Call a web API</td><td>A plugin with <code>network</code> and the API's host in <code>networkHosts</code>. See <a href="plugins.html#web-requests">web requests</a>.</td></tr>

@@ -12,6 +12,7 @@ order: 3
 <ul>
   <li><strong>Fresh every time.</strong> Each call loads <code>plugin.js</code> from scratch. Nothing kept in a module variable survives to the next request, so state belongs in <code>host.store</code> or <code>host.fs</code>.</li>
   <li><strong>Synchronous.</strong> Exports are plain functions. There is no <code>await</code> on the network or a model; those calls work in passes (below). <code>fetch</code> does not exist inside the sandbox.</li>
+  <li><strong>Logged.</strong> <code>console.log</code> and <code>host.log</code> go to the server log, prefixed with the plugin's id.</li>
   <li><strong>Bounded.</strong> One pass may run for 10 seconds and use 64 MB of memory. A plugin that runs over, crashes or corrupts the runtime loses only its worker, which restarts on the next call. The engine keeps serving.</li>
 </ul>
 <p>Modern syntax is fine: QuickJS supports ES2023. Helper functions belong at the top level of the module; a function declared inside a block is only visible in that block.</p>
@@ -121,7 +122,7 @@ export function handleTool(name, args, host) {
 }
 
 // in a route: host.llm.request("reply", { messages, tools: [ROLL] })</code></pre>
-<p>The engine runs the tool loop: each call the model makes runs <code>handleTool</code> in its own sandbox call, which can itself use <code>host.net</code> in passes. Up to 16 tools fit on one request, with names made of letters, digits, <code>_</code> and <code>-</code>.</p>
+<p>The engine runs the tool loop: each call the model makes runs <code>handleTool</code> in its own sandbox call, which can itself use <code>host.llm</code>, <code>host.net</code> and embeddings in passes. A model request made inside a tool gets no tools of its own. Up to 16 tools fit on one request, with names made of letters, digits, <code>_</code> and <code>-</code>.</p>
 
 <h3>Tools from other plugins</h3>
 <p>A dedicated tools plugin can offer tools to every model request in its app. It exports <code>appTools(ctx, host)</code> returning <code>{ tools: [...] }</code>, and any sibling plugin that marks a request with <code>wantsTools: true</code> gets them, with calls routed back to the plugin that offered each one. Roleplay works this way: its chat plugin asks for tools, and its separate tools plugin supplies dice, pictures and custom tools. Turn the tools plugin off and tool calling is gone.</p>
@@ -152,13 +153,13 @@ export function handleTool(name, args, host) {
 </ul>
 
 <h2>Embeddings</h2>
-<p>Routes can turn text into vectors with <code>host.llm.embed(key, { texts, model })</code> on one pass and read <code>host.llm.embedResults[key]</code>, an array of number arrays, on the next. Store the vectors with <code>host.fs</code> to build search or long-term memory. The embedding model comes from <span class="ui">Settings</span> unless the request names one.</p>
+<p>Any plugin with <code>llm</code> can turn text into vectors with <code>host.llm.embed(key, { texts, model })</code> on one pass and read <code>host.llm.embedResults[key]</code>, an array of number arrays, on the next. Store the vectors with <code>host.fs</code> to build search or long-term memory. The embedding model comes from <span class="ui">Settings</span> unless the request names one.</p>
 
 <h2>Timers, updates and panels</h2>
 <table>
   <thead><tr><th>Export</th><th>What it is for</th></tr></thead>
   <tbody>
-    <tr><td><code>onTick(ctx, host)</code></td><td>Background work on the manifest's <code>schedule.intervalMs</code>, at least every 5 seconds. Needs the <code>schedule</code> permission. Timers are set up for the active app when Chrysalis first gets a signed-in request after starting.</td></tr>
+    <tr><td><code>onTick(ctx, host)</code></td><td>Background work on the manifest's <code>schedule.intervalMs</code>, at least every 5 seconds. Needs the <code>schedule</code> permission. Timers run for every installed app from the moment Chrysalis starts, each tick runs the plugin's current code, and a tick never starts while the previous one is still running. Turning a plugin on or off applies at once; a new plugin or interval is picked up within 10 seconds of using Chrysalis. What <code>onTick</code> returns reaches the app's open pages as a <code>plugin_event</code> with <code>app</code>, <code>plugin</code> and <code>payload</code>.</td></tr>
     <tr><td><code>onAppUpdate(ctx, host)</code></td><td>Runs once after an update lands, with <code>ctx.from</code> and <code>ctx.to</code> versions, to upgrade stored data.</td></tr>
     <tr><td><code>uiPanel(ctx, host)</code></td><td>Returns a description of a settings panel with at least a <code>label</code>. The app lists every plugin's panel from <code>/v1/apps/&lt;app&gt;/__panels</code> and renders them.</td></tr>
   </tbody>
