@@ -25,6 +25,7 @@ order: 4
   <li><strong>Your workspace:</strong> your apps, their plugins and their data. It cannot read your model keys or other accounts.</li>
   <li><strong>A command shell</strong> that runs inside your browser tab, never on the server, with Python available. Turn it off with <code>agent.shell</code> in <a href="settings.html">config.yaml</a>.</li>
   <li><strong>Internet access in that shell</strong>, for things like <code>curl</code> and <code>pip</code>. It is on by default; turn it off in <span class="ui">Settings</span> &gt; <span class="ui">Agent</span>. Your own computer and local network stay blocked either way.</li>
+  <li><strong>Public git repositories:</strong> ask it to clone one (an <code>https://</code> address) and it copies the files into <code>repos/</code> in your workspace to read or borrow from. That folder stays out of your history, and cloning needs internet access on.</li>
   <li><strong>Web search</strong> once you add a search key in <span class="ui">Settings</span> &gt; <span class="ui">MCP servers</span>.</li>
   <li><strong>Tools from MCP servers</strong> you add in <span class="ui">Settings</span> &gt; <span class="ui">MCP servers</span>.</li>
 </ul>
