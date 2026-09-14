@@ -52,7 +52,7 @@ order: 2
   <li>Keep your plugins' permissions as small as you can. On community apps, an update that adds a permission stops and asks the user.</li>
   <li>Changing npm packages also asks the user on community apps, so batch those changes.</li>
   <li>If a release needs a newer Chrysalis, say so with <code>engine</code> in the manifest.</li>
-  <li>Upgrade stored data in a plugin's <code>onAppUpdate</code> export rather than asking people to start over.</li>
+  <li>Upgrade stored data in a plugin's <code>onAppUpdate</code> export rather than asking people to start over. It receives the version the data last had, which can be several releases back, so check <code>ctx.from</code> against each change. It may run for up to five minutes with 512 MB of memory, and if it throws it runs again later from the same version, so every step must be safe to repeat.</li>
 </ul>
 
 <h2>Official apps</h2>

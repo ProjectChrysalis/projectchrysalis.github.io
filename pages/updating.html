@@ -14,11 +14,25 @@ order: 3
   <tbody>
     <tr><td>Windows, macOS, Linux, portable copy</td><td>Click <span class="ui">Update to X</span>. Chrysalis downloads the new version, replaces itself and restarts, and the page reloads when it is back. Your settings and data stay where they are.</td></tr>
     <tr><td>Android</td><td>The launcher app shows <span class="ui">Get version X</span>. Tap it, open the downloaded APK, and install it over the old app. Your data stays.</td></tr>
+    <tr><td>Bun</td><td><code>bun add -g chrysalis-engine@latest</code>, then restart Chrysalis.</td></tr>
     <tr><td>Docker</td><td><code>docker compose pull &amp;&amp; docker compose up -d</code>. Your data stays in the volume.</td></tr>
     <tr><td>From source</td><td><code>git pull &amp;&amp; bun install &amp;&amp; (cd client-agent &amp;&amp; bun install) &amp;&amp; bun run build:client</code>, then restart.</td></tr>
   </tbody>
 </table>
 <p>If the button says Chrysalis cannot replace its own files, its folder is somewhere your account cannot write to (such as <code>Program Files</code>). Move the folder somewhere you own, like your home folder, and try again.</p>
+
+<h3>If an update goes wrong</h3>
+<p>A download only replaces anything once it has proven itself:</p>
+<ol class="steps">
+  <li>It must match the size and checksum the release publishes.</li>
+  <li>The new version must start on your computer and report the version the release names. A build that cannot run there stops the update while the old program is untouched.</li>
+  <li>After the restart, the old version waits in the background until the new one has been serving for 15 seconds. If the new version stops before that, the old program and your account files are put back, the old version starts again, and <span class="ui">Settings</span> &gt; <span class="ui">Server</span> says what happened.</li>
+</ol>
+<p>The old program is kept beside the new one until the next time Chrysalis starts. If the page is still waiting after five minutes, it stops and tells you to check the window or log where Chrysalis runs.</p>
+<p>Before an update, <span class="ui">Settings</span> &gt; <span class="ui">Server</span> also names installed apps that say they need a different version of Chrysalis.</p>
+
+<h3>Going back to an older version</h3>
+<p>Chrysalis records the data layout it last used in <code>format.json</code> in the data folder. A newer version may upgrade that layout; an older version then refuses to start and says which version to install, rather than reading data it does not understand and damaging it. Your data is not changed.</p>
 
 <h3>Staging installs</h3>
 <p>A staging copy follows the staging pre-release instead of stable releases: whenever a newer staging build is published, it is offered. On Android the button reads <span class="ui">Get the latest staging build</span>. Docker users pull the <code>:staging</code> tag.</p>
@@ -45,7 +59,18 @@ order: 3
     <tr><td><span class="ui">Ask the agent to merge</span></td><td>Both sides are written into the files and the agent merges them for you.</td></tr>
   </tbody>
 </table>
-<p>An app's <code>data</code> folder (your chats, characters and everything else it stores) is never part of an update. Before every update, your workspace is saved to its history, so any update can be walked back.</p>
+<p>An app's <code>data</code> folder (your chats, characters and everything else it stores) is never replaced by an update. Before every update, your workspace is saved to its history, so any update can be walked back.</p>
+
+<h3>All or nothing</h3>
+<ul>
+  <li>If a file cannot be written (a full disk, a file another program has open), every file the update touched goes back and nothing changes.</li>
+  <li>One update of an app runs at a time, even with the app open on several devices.</li>
+  <li>When an update changes an app's packages, they are installed over the ones it has. If the install fails, the app keeps its old packages and the update says so.</li>
+  <li>Importing an app you already have from the same repository is refused. Use <span class="ui">Update</span>, which keeps your edits.</li>
+</ul>
+
+<h3>Data upgrades</h3>
+<p>A new version of an app can upgrade the data an older version stored, like moving chats to a new format. If that upgrade fails, the update tells you which part failed, and it is tried again the next time the app is used, starting from the version your data still has. Your data stays as it was until the upgrade succeeds.</p>
 
 <h3>What gets reviewed</h3>
 <p>For community apps, an update stops and asks before it:</p>
@@ -56,7 +81,7 @@ order: 3
 <p>Click <span class="ui">Allow and update</span> to go ahead. If the repository changes between that review and your click, Chrysalis refuses and asks you to check again, so you only ever approve what you saw. Official apps skip this review.</p>
 
 <h3>When an update needs a newer Chrysalis</h3>
-<p>An app can say which Chrysalis versions it needs. If yours is too old, the update stops before changing anything and says which version it needs. Update Chrysalis first.</p>
+<p>An app can say which Chrysalis versions it needs. For apps on GitHub, the launcher shows the new version number and says so before you click <span class="ui">Update</span>. Either way, the update stops before changing anything and says which version it needs. Update Chrysalis first.</p>
 
 <h2>Plugins you added to an app</h2>
 <p>Plugins that came with an app update with the app. A plugin you imported into an app yourself updates on its own: open the app's <span class="ui">Plugins</span> dialog and click <span class="ui">Check for update</span> next to it. You see the new version and its permissions before anything changes, and the update replaces the plugin in place. App updates never remove a plugin you imported.</p>

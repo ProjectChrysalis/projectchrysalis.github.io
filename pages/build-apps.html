@@ -97,7 +97,7 @@ const { notes } = await res.json()</code></pre>
     <tr><td><code>appTools(ctx, host)</code></td><td><code>tools</code></td><td>To add tools to other plugins' model requests that ask for them.</td></tr>
     <tr><td><code>llmRequest(ctx, host)</code></td><td><code>hooks</code> and <code>llm</code></td><td>Before another plugin's model request, returning changes to it. The manifest's <code>priority</code> orders several.</td></tr>
     <tr><td><code>onTick(ctx, host)</code></td><td><code>schedule</code></td><td>On the timer the manifest sets with <code>"schedule": { "intervalMs": 60000 }</code>.</td></tr>
-    <tr><td><code>onAppUpdate(ctx, host)</code></td><td></td><td>Once after an update lands, with the old and new versions, to upgrade stored data.</td></tr>
+    <tr><td><code>onAppUpdate(ctx, host)</code></td><td></td><td>After an update lands, with the old and new versions, to upgrade stored data. Gets five minutes and 512 MB, and is retried until it succeeds.</td></tr>
     <tr><td><code>uiPanel(ctx, host)</code></td><td></td><td>To describe a settings panel the app can render for the plugin.</td></tr>
   </tbody>
 </table>
