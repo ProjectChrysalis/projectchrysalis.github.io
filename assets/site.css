@@ -850,6 +850,32 @@ a.card:hover {
   font-size: 13px;
 }
 
+.showcase {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 8px 24px 56px;
+}
+.showcase h2 {
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-weight: 600;
+}
+.showcase p {
+  margin: 0 0 16px;
+  color: var(--c-ink-muted);
+}
+.showcase-video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius);
+  border: 1px solid var(--c-line);
+  box-shadow: var(--s-raised);
+  background: #000;
+}
+
 .cta {
   width: 100%;
   max-width: 1120px;
@@ -890,6 +916,7 @@ a.card:hover {
   .feature-grid {
     grid-template-columns: minmax(0, 1fr);
   }
+  .showcase,
   .features,
   .cta {
     padding-left: 16px;
