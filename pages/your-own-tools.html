@@ -8,9 +8,14 @@ order: 3
 <p class="lead">Nothing in Chrysalis is only reachable from the built-in agent. Your whole Chrysalis is a folder of plain files under git, so the editor and coding agent you already use work on it directly.</p>
 
 <h2>Find the workspace</h2>
-<p>Run this next to Chrysalis, or wherever you installed it:</p>
-<pre><code>chrysalis workspace</code></pre>
-<p>It prints the folder, the address the engine is serving on, and the apps inside it. This works the same on every install &mdash; a downloaded build keeps its data in your app-data folder rather than beside the program, which is the only reason it is hard to find by hand. If you have more than one account, add <code>--user &lt;name&gt;</code>.</p>
+<p>Open a terminal <strong>in the folder you unpacked Chrysalis into</strong> and run it by name:</p>
+<pre><code>./chrysalis workspace            # macOS, Linux
+.\chrysalis.exe workspace        # Windows
+chrysalis workspace              # if you installed with bun install -g</code></pre>
+<p>A downloaded Chrysalis is not on your <code>PATH</code>, so plain <code>chrysalis</code> is not recognized until you put it there. Do that once and it works from anywhere:</p>
+<pre><code>./chrysalis install-cli</code></pre>
+<p>On macOS and Linux that is a link in <code>~/.local/bin</code>. On Windows it is a small launcher in your Chrysalis data folder, and that folder is added to your account's <code>PATH</code> &mdash; open a new terminal afterwards. <code>uninstall-cli</code> undoes it. Everything below says <code>chrysalis</code>; before you run it, use <code>./chrysalis</code> from the unpacked folder.</p>
+<p>It prints the workspace folder, the address the engine is serving on, and the apps inside it. This works the same on every install &mdash; a downloaded build keeps its data in your app-data folder rather than beside the program, which is the only reason it is hard to find by hand. If you have more than one account, add <code>--user &lt;name&gt;</code>.</p>
 <p>Point your editor or coding agent at that folder and work normally. Saves reach open pages on their own: a change under an app's <code>data/</code> shows up in about a second, and a change under its <code>src/</code> rebuilds in your browser. There is nothing to restart.</p>
 
 <h2>What it will find</h2>
