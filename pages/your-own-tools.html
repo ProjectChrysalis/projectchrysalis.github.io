@@ -11,7 +11,7 @@ order: 3
 <p>Open a terminal &mdash; any terminal, anywhere &mdash; and run:</p>
 <pre><code>chrysalis workspace</code></pre>
 <p>Chrysalis makes itself a command the first time it starts, so there is nothing to install. If you started it just now, open a <em>new</em> terminal: one already running has not re-read your <code>PATH</code>.</p>
-<p>Not working? Run it once by name from the folder you unpacked it into &mdash; <code>./chrysalis install-cli</code>, or <code>.\chrysalis.exe install-cli</code> on Windows &mdash; and it will say what it did. It is a link in <code>~/.local/bin</code> on macOS and Linux, and a small launcher on your <code>PATH</code> on Windows. <code>chrysalis uninstall-cli</code> removes it and it stays removed.</p>
+<p>Don't want it? <code>chrysalis uninstall-cli</code> removes it, and it stays removed.</p>
 <p>It prints the workspace folder, the address the engine is serving on, and the apps inside it. This works the same on every install &mdash; a downloaded build keeps its data in your app-data folder rather than beside the program, which is the only reason it is hard to find by hand. If you have more than one account, add <code>--user &lt;name&gt;</code>.</p>
 <p>Point your editor or coding agent at that folder and work normally. Saves reach open pages on their own: a change under an app's <code>data/</code> shows up in about a second, and a change under its <code>src/</code> rebuilds in your browser. There is nothing to restart.</p>
 
