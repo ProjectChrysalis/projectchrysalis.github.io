@@ -34,5 +34,13 @@ order: 4
 <h2>Choosing its model</h2>
 <p>The agent uses any model from your <span class="ui">API connections</span>. Pick one in the agent's model menu; <span class="ui">Settings</span> &gt; <span class="ui">Agent</span> also holds its instructions and how it handles long sessions. Building apps works best with a strong coding model.</p>
 
+<h2>Keeping it on track</h2>
+<p>Two places hold what the agent should know, and it reads both on every request without being asked.</p>
+<ul>
+  <li><strong>Instructions that always apply</strong> &mdash; <span class="ui">Settings</span> &gt; <span class="ui">Agent</span>, the instructions box. Short standing rules: how you like things named, what to never touch, which model to prefer for what. Saved as <code>persona.md</code> in your workspace, so the agent can edit it for you too.</li>
+  <li><strong>Plans, specs and reference material</strong> &mdash; the <code>notes/</code> folder in your workspace, one markdown file per topic. The agent sees every file listed by name and first line, and opens the ones that bear on what you asked for. Make the first line say what the file covers, since that is what it reads in the list. Ask the agent to write one (&ldquo;put the plan in notes/&rdquo;) or drop your own files in.</li>
+</ul>
+<p>Each installed app also carries its own <code>AGENTS.md</code> describing how that app is built, and the agent is given the active app's copy in full. Edit it to change how the agent works on that app &mdash; Chrysalis never overwrites a file you have changed.</p>
+
 <h2>How it works</h2>
 <p>How edits reach an open app, and the tools the agent uses to check its own work, are on <a href="live-editing.html">Live editing</a>.</p>

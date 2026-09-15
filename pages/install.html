@@ -33,11 +33,8 @@ order: 1
 <ol class="steps">
   <li>Download the file for your Mac. Not sure which? Apple menu, <span class="ui">About This Mac</span>: <span class="ui">Chip: Apple M…</span> means <code>macos-arm64</code>, <span class="ui">Processor: Intel</span> means <code>macos-x64</code>.</li>
   <li>Double-click the download to unpack it.</li>
-  <li>Open <span class="ui">Terminal</span>, type <code>cd </code> (with a space), drag the unpacked folder into the Terminal window, and press Return.</li>
-  <li>macOS blocks programs downloaded from the internet that are not notarized. Clear that once for this folder, then start Chrysalis:
-<pre><code>xattr -dr com.apple.quarantine .
-./chrysalis</code></pre>
-  </li>
+  <li>Double-click <code>start.command</code> in the unpacked folder. Not <code>chrysalis</code> &mdash; opening that one directly is blocked, or closes straight away with <code>killed</code>.</li>
+  <li>The first start says it is preparing Chrysalis. It is clearing the flag macOS puts on downloads and signing the program for this Mac, because it does not arrive with a signature macOS accepts. It only touches this folder, and only happens once per download. <a href="troubleshooting.html">Troubleshooting</a> has the Terminal commands if you would rather run them yourself.</li>
   <li>Your browser opens Chrysalis. Keep the Terminal window open while you use it.</li>
 </ol>
 

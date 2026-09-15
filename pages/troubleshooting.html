@@ -7,10 +7,15 @@ order: 2
 <h1>Troubleshooting</h1>
 <p class="lead">Start with the log. It is in the window where Chrysalis started, in <code>data/logs/chrysalis.log</code>, and behind the <span class="ui">Logs</span> button in the Android app.</p>
 
-<h2>macOS says Chrysalis cannot be opened</h2>
-<p>macOS blocks downloaded programs that are not notarized. In Terminal, in the unpacked Chrysalis folder:</p>
-<pre><code>xattr -dr com.apple.quarantine .</code></pre>
-<p>Do this again after each update, since each download is a new folder.</p>
+<h2>macOS says Chrysalis cannot be opened, or closes with &ldquo;killed&rdquo;</h2>
+<p>Double-click <code>start.command</code> in the unpacked folder instead of <code>chrysalis</code>. It clears both of the things macOS objects to and then starts Chrysalis. Do it again after each update, since each download is a new folder.</p>
+<p>Clearing the download flag on its own is often not enough: on Apple silicon macOS also <em>kills</em> a program whose signature it will not accept, with no dialog and nothing in Terminal but <code>killed</code>. These builds do not carry a signature macOS accepts, so the program has to be signed on your own Mac. That signature grants nothing and identifies no one; it only tells macOS the file is intact.</p>
+<p>To do the same by hand, in Terminal in the unpacked folder:</p>
+<pre><code>xattr -dr com.apple.quarantine .
+codesign --remove-signature chrysalis
+codesign --force --sign - chrysalis
+./chrysalis</code></pre>
+<p>Installing with <code>bun install -g chrysalis-engine</code> avoids all of this.</p>
 
 <h2>Windows says it protected your PC</h2>
 <p>Click <span class="ui">More info</span>, then <span class="ui">Run anyway</span>. Windows warns about programs that are not signed with a paid certificate.</p>
