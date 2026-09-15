@@ -8,13 +8,10 @@ order: 3
 <p class="lead">Nothing in Chrysalis is only reachable from the built-in agent. Your whole Chrysalis is a folder of plain files under git, so the editor and coding agent you already use work on it directly.</p>
 
 <h2>Find the workspace</h2>
-<p>Open a terminal <strong>in the folder you unpacked Chrysalis into</strong> and run it by name:</p>
-<pre><code>./chrysalis workspace            # macOS, Linux
-.\chrysalis.exe workspace        # Windows
-chrysalis workspace              # if you installed with bun install -g</code></pre>
-<p>A downloaded Chrysalis is not on your <code>PATH</code>, so plain <code>chrysalis</code> is not recognized until you put it there. Do that once and it works from anywhere:</p>
-<pre><code>./chrysalis install-cli</code></pre>
-<p>On macOS and Linux that is a link in <code>~/.local/bin</code>. On Windows it is a small launcher in your Chrysalis data folder, and that folder is added to your account's <code>PATH</code> &mdash; open a new terminal afterwards. <code>uninstall-cli</code> undoes it. Everything below says <code>chrysalis</code>; before you run it, use <code>./chrysalis</code> from the unpacked folder.</p>
+<p>Open a terminal &mdash; any terminal, anywhere &mdash; and run:</p>
+<pre><code>chrysalis workspace</code></pre>
+<p>Chrysalis makes itself a command the first time it starts, so there is nothing to install. If you started it just now, open a <em>new</em> terminal: one already running has not re-read your <code>PATH</code>.</p>
+<p>Not working? Run it once by name from the folder you unpacked it into &mdash; <code>./chrysalis install-cli</code>, or <code>.\chrysalis.exe install-cli</code> on Windows &mdash; and it will say what it did. It is a link in <code>~/.local/bin</code> on macOS and Linux, and a small launcher on your <code>PATH</code> on Windows. <code>chrysalis uninstall-cli</code> removes it and it stays removed.</p>
 <p>It prints the workspace folder, the address the engine is serving on, and the apps inside it. This works the same on every install &mdash; a downloaded build keeps its data in your app-data folder rather than beside the program, which is the only reason it is hard to find by hand. If you have more than one account, add <code>--user &lt;name&gt;</code>.</p>
 <p>Point your editor or coding agent at that folder and work normally. Saves reach open pages on their own: a change under an app's <code>data/</code> shows up in about a second, and a change under its <code>src/</code> rebuilds in your browser. There is nothing to restart.</p>
 
@@ -32,7 +29,9 @@ chrysalis workspace              # if you installed with bun install -g</code></
 chrysalis api GET  /v1/apps/roleplay/build
 chrysalis api POST /v1/apps/roleplay/build '{}'
 chrysalis api GET  /v1/agent/commands</code></pre>
-<p>It calls the API of the Chrysalis running on this machine, as your account, and prints what comes back. A body goes on the command line or through a pipe. Anything the app can do, this can do &mdash; it is the same API the shell uses.</p>
+<p>It calls the API of the Chrysalis running on this machine, as your account, and prints what comes back. Anything the app can do, this can do &mdash; it is the same API the shell uses.</p>
+<p>Sending a body? Pipe it. Shells, and Windows especially, chew on quotes inside a JSON argument; a pipe carries the bytes untouched. Chrysalis checks the body before sending and tells you if your shell got to it first.</p>
+<pre><code>echo '{"persona":"Prefer small diffs."}' | chrysalis api PUT /v1/settings/persona</code></pre>
 <p>It only works locally and only for someone who can already read the data folder, so it grants nothing that running the command did not.</p>
 
 <h2>Your prompts, in the composer</h2>
