@@ -63,7 +63,7 @@ order: 1
 <p>Two jobs that run untrusted code happen in your browser instead of on the machine running Chrysalis:</p>
 <ul>
   <li><strong>Building apps.</strong> Bundling, Tailwind and any Tailwind plugin an app brings run in a sandboxed builder frame. The engine only reads the app's files for it and writes the output back. App packages are downloaded with their install scripts turned off, so nothing from npm runs as a program on your computer.</li>
-  <li><strong>The agent's shell.</strong> Commands run in a WebAssembly shell with Python, inside a sandboxed frame, on every platform. Changed files are synced back through the engine.</li>
+  <li><strong>The agent's shell.</strong> Commands run in a WebAssembly shell with git, Python and node, inside a sandboxed frame, on every platform. Changed files are synced back through the engine.</li>
 </ul>
 <p>The trade-off: both need a Chrysalis tab open. With no page open, apps do not rebuild and the agent has no shell, though its file tools still work.</p>
 
@@ -74,7 +74,7 @@ order: 1
     <tr><td>Engine</td><td>Bun, a single executable per platform (a native library inside the Android app)</td></tr>
     <tr><td>Plugin sandbox</td><td>QuickJS compiled to WebAssembly, in a worker thread</td></tr>
     <tr><td>Builder</td><td>esbuild (WebAssembly), Babel's React Refresh transform, Tailwind v4</td></tr>
-    <tr><td>Agent shell</td><td>A WebAssembly shell with bash-style commands and Python (Pyodide)</td></tr>
+    <tr><td>Agent shell</td><td>A WebAssembly shell with busybox commands, real git, MicroPython and QuickJS node</td></tr>
     <tr><td>Workspace history and app installs</td><td>A git implementation in JavaScript, so no git program is needed</td></tr>
     <tr><td>Shell and apps</td><td>React and Tailwind</td></tr>
   </tbody>

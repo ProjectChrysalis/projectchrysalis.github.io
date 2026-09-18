@@ -84,6 +84,7 @@ order: 3
     <tr><td><code>model</code></td><td><code>"provider/model-id"</code> from the model list, or leave it out for the user's default.</td></tr>
     <tr><td><code>reasoning</code></td><td><code>off</code>, <code>minimal</code>, <code>low</code>, <code>medium</code>, <code>high</code>, <code>xhigh</code> or <code>max</code> on models that think.</td></tr>
     <tr><td><code>presetParams</code></td><td><code>{ temperature, max_tokens, params }</code>, where <code>params</code> passes sampler settings like <code>top_p</code> or <code>min_p</code> to providers that accept them.</td></tr>
+    <tr><td><code>cache</code></td><td><code>{ depth, retention }</code> for prompt caching. <code>depth</code> pins the history breakpoint that many turns back on Anthropic models (0 is the last turn). <code>retention</code> is <code>"short"</code>, <code>"long"</code> (1h on Anthropic, 24h on OpenAI where the endpoint supports it) or <code>"none"</code> to drop the markers and cache hints. Gemini, DeepSeek and friends cache on their own.</td></tr>
     <tr><td><code>schema</code></td><td>A JSON Schema with an object root. The model is made to answer in that shape and the parsed result lands in <code>json</code>.</td></tr>
     <tr><td><code>tools</code>, <code>wantsTools</code></td><td>Tools the model may call (below).</td></tr>
     <tr><td><code>stream</code></td><td><code>{ chatId, name }</code> to stream the reply to the app's page (below).</td></tr>
@@ -137,7 +138,7 @@ export function handleTool(name, args, host) {
   }
 }</code></pre>
 <ul>
-  <li>Only <code>messages</code>, <code>systemPrompt</code>, <code>model</code>, <code>sessionId</code>, <code>reasoning</code>, <code>thinkingBudget</code>, <code>reasoningTags</code>, <code>assistantPrefill</code>, <code>promptFormat</code>, <code>presetParams</code> and <code>schema</code> can be changed. Tools, streaming and cancelling stay with the engine.</li>
+  <li>Only <code>messages</code>, <code>systemPrompt</code>, <code>model</code>, <code>sessionId</code>, <code>reasoning</code>, <code>thinkingBudget</code>, <code>reasoningTags</code>, <code>assistantPrefill</code>, <code>promptFormat</code>, <code>presetParams</code>, <code>cache</code> and <code>schema</code> can be changed. Tools, streaming and cancelling stay with the engine.</li>
   <li>Several hooks run in order of the manifest's <code>priority</code>, lowest first, so the highest has the last word. Ties go by plugin id.</li>
   <li>A hook that crashes is skipped and the request goes ahead. Model requests a hook makes itself are not hooked again.</li>
 </ul>
