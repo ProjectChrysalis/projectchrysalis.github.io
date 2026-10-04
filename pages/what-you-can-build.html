@@ -37,6 +37,7 @@ order: 0
     <tr><td>Do work in the background</td><td>A plugin with <code>schedule</code> and an <code>onTick</code> export.</td></tr>
     <tr><td>Import files people upload</td><td>A route with the <code>zip</code> permission for archives, or plain JSON bodies up to 1 MB.</td></tr>
     <tr><td>Change another plugin's prompts</td><td>A plugin with <code>hooks</code> and <code>llm</code> exporting <code>llmRequest</code>. See <a href="plugins.html#adjusting-other-plugins-prompts">prompt hooks</a>.</td></tr>
+    <tr><td>Reshape another plugin's replies</td><td>The same plugin can export <code>llmResponse</code>, returning changed result text, JSON, reasoning or prefill echo. See <a href="plugins.html#adjusting-what-comes-back">reply hooks</a>.</td></tr>
     <tr><td>Update live when data changes</td><td>Listen for <code>look_changed</code> on the WebSocket. See <a href="live-editing.html#data-changes-reach-open-pages">data changes</a>.</td></tr>
   </tbody>
 </table>

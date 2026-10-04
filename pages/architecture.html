@@ -51,6 +51,7 @@ order: 1
 
 <h2>Why apps run in a frame</h2>
 <p>An app's page is served from <code>/app/&lt;name&gt;/&lt;app&gt;/</code> into an <code>iframe</code> with the <code>sandbox</code> attribute and no same-origin access. That gives it an opaque origin: no cookies, no session, no view into the shell. Its content security policy sets <code>connect-src 'none'</code>, so it cannot open connections of its own.</p>
+<p>App exports pass file bytes through the bridge to a <span class="ui">Save file</span> button in Chrysalis. The shell accepts no download URLs and saves only after you click. The frame keeps its origin and network restrictions.</p>
 <p>The bridge script that runs first in every app page replaces <code>fetch</code>, <code>WebSocket</code>, <code>localStorage</code>, <code>sessionStorage</code> and <code>document.cookie</code> with versions that ask the shell. To the app they behave like the real thing:</p>
 <ul>
   <li><code>fetch</code> reaches the app's own <code>/v1/apps/&lt;app&gt;/…</code> routes and a short shared list: reading the model list, generating images and speech, embeddings settings and shared assets.</li>
@@ -74,7 +75,7 @@ order: 1
     <tr><td>Engine</td><td>Bun, a single executable per platform (a native library inside the Android app)</td></tr>
     <tr><td>Plugin sandbox</td><td>QuickJS compiled to WebAssembly, in a worker thread</td></tr>
     <tr><td>Builder</td><td>esbuild (WebAssembly), Babel's React Refresh transform, Tailwind v4</td></tr>
-    <tr><td>Agent shell</td><td>A WebAssembly shell with busybox commands, real git, MicroPython and QuickJS node</td></tr>
+    <tr><td>Agent shell</td><td>A WebAssembly shell with busybox commands, real git, CPython, jq and QuickJS node</td></tr>
     <tr><td>Workspace history and app installs</td><td>A git implementation in JavaScript, so no git program is needed</td></tr>
     <tr><td>Shell and apps</td><td>React and Tailwind</td></tr>
   </tbody>

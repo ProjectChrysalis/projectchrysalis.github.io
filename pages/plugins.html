@@ -138,11 +138,31 @@ export function handleTool(name, args, host) {
   }
 }</code></pre>
 <ul>
-  <li>Only <code>messages</code>, <code>systemPrompt</code>, <code>model</code>, <code>sessionId</code>, <code>reasoning</code>, <code>thinkingBudget</code>, <code>reasoningTags</code>, <code>assistantPrefill</code>, <code>promptFormat</code>, <code>presetParams</code>, <code>cache</code> and <code>schema</code> can be changed. Tools, streaming and cancelling stay with the engine.</li>
+  <li>Only <code>messages</code>, <code>systemPrompt</code>, <code>model</code>, <code>sessionId</code>, <code>reasoning</code>, <code>thinkingBudget</code>, <code>reasoningTags</code>, <code>assistantPrefill</code>, <code>promptFormat</code>, <code>presetParams</code>, <code>cache</code>, <code>schema</code>, <code>streamMuted</code> and <code>streamDecode</code> can be changed. Tools, streaming and cancelling stay with the engine. <code>streamMuted: true</code> keeps a generation out of the live stream while it still runs and commits; Stop still cancels it. <code>streamDecode: { fields, replace? }</code> is for wire formats: deltas are decoded live out of those JSON string fields, in wire order (with optional literal replacements), so the real text streams while the model writes it.</li>
   <li>Several hooks run in order of the manifest's <code>priority</code>, lowest first, so the highest has the last word. Ties go by plugin id.</li>
   <li>A hook that crashes is skipped and the request goes ahead. Model requests a hook makes itself are not hooked again.</li>
 </ul>
 <p>This is how you add a feature to an app without touching its code: drop in a plugin that adds memory, a style guide or a translation step to every prompt.</p>
+
+<p>Stream decoding selects top-level string fields only, in the order they arrive. Nested metadata is skipped. Escapes and literal replacements can span chunks. If no selected field appears, decoding falls back to at most 64 KB of the raw response.</p>
+
+<h2>Adjusting what comes back</h2>
+<p>The same plugin permissions also allow <code>llmResponse(ctx, host)</code>, which runs after a sibling's model call finishes. It sees the request that was sent as <code>ctx.request</code> and the result as <code>ctx.result</code>, and returns the result fields to change:</p>
+<pre><code>export function llmResponse(ctx, host) {
+  const text = ctx.result.text
+  if (!text.startsWith("{")) return null
+  try {
+    const parsed = JSON.parse(text)
+    return { text: parsed.response || text }
+  } catch {
+    return null
+  }
+}</code></pre>
+<ul>
+  <li>Only <code>text</code>, <code>json</code>, <code>reasoning</code> and <code>assistantPrefill</code> can be changed. Usage, timing, the model name and the tool trace stay as measured. Text, reasoning and assistant prefill patches must be strings; an invalid value is ignored while other valid fields still apply.</li>
+  <li>Ordering and crash rules match <code>llmRequest</code>: lowest <code>priority</code> first, each hook sees the result as patched so far, a crashed hook is skipped.</li>
+  <li>Clear <code>assistantPrefill</code> when the hook consumed the prefill turn, or the caller will prepend the prefill echo to the reply again.</li>
+</ul>
 
 <h2>Web requests</h2>
 <p><code>host.net.request(key, { url, method, headers, body, form, timeoutMs, maxBytes, json, binary })</code> works in passes like a model call. The result has <code>ok</code>, <code>status</code>, <code>headers</code>, the final <code>url</code>, and <code>text</code>, <code>json</code> or <code>base64</code>.</p>
@@ -165,6 +185,15 @@ export function handleTool(name, args, host) {
     <tr><td><code>uiPanel(ctx, host)</code></td><td>Returns a description of a settings panel with at least a <code>label</code>. The app lists every plugin's panel from <code>/v1/apps/&lt;app&gt;/__panels</code> and renders them.</td></tr>
   </tbody>
 </table>
+
+<h3>Settings panels</h3>
+<p>A panel is <code>{ label, icon?, hint?, items, create? }</code>. Each item is <code>{ id, title, subtitle?, badge?, enabled, saveUrl, deleteUrl?, deleteLabel?, fields?, note? }</code>:</p>
+<ul>
+  <li>The switch beside an item toggles it with <code>PUT saveUrl { enabled }</code>. Opening it shows its fields and a Save button that sends <code>PUT saveUrl { enabled, values }</code>, where <code>values</code> maps field keys to strings.</li>
+  <li>Each field is <code>{ key, label, kind, value, options?, hint? }</code>. Kinds: <code>text</code>, <code>number</code>, <code>textarea</code>, <code>code</code>, <code>toggle</code> (sends <code>"on"</code>/<code>"off"</code>), <code>select</code> (with <code>options: [{ value, label }]</code>), <code>model</code> (a picker over the engine's model catalog, empty value means the chat's model), and <code>section</code>, a heading row that carries no value.</li>
+  <li><code>create: { url, label }</code> adds a New button. <code>POST</code> to that URL returns a fresh item to edit; nothing is stored until its first save.</li>
+  <li>Panel URLs are app-relative routes your plugin answers with <code>handleRoute</code>.</li>
+</ul>
 
 <h2>Reading uploaded zips</h2>
 <p>Importers use the <code>zip</code> permission. When a request body includes <code>zipBase64</code>, <code>host.zip.entries()</code> returns the archive's text files as <code>{ "path": "contents" }</code>, with binary files marked. Archives are checked before unpacking: at most 200 MB, 5,000 files and 256 MB uncompressed, and no paths that climb out.</p>

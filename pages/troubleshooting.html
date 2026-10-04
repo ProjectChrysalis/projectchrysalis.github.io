@@ -7,6 +7,9 @@ order: 2
 <h1>Troubleshooting</h1>
 <p class="lead">Start with the log. It is in the window where Chrysalis started, in <code>data/logs/chrysalis.log</code>, and behind the <span class="ui">Logs</span> button in the Android app.</p>
 
+<h2>A model stops with an error</h2>
+<p>Generation errors include the provider's message and its raw stop reason when supplied, such as <code>content_filter</code>, <code>refusal</code> or <code>SAFETY</code>. HTTP failures include the status and available response details. Include those details when reporting a problem. A missing reason is reported as missing rather than guessed.</p>
+
 <h2>macOS says Chrysalis cannot be opened, or closes with &ldquo;killed&rdquo;</h2>
 <p>Double-click <code>start.command</code> in the unpacked folder instead of <code>chrysalis</code>. It clears both of the things macOS objects to and then starts Chrysalis. Do it again after each update, since each download is a new folder.</p>
 <p>Clearing the download flag on its own is often not enough: on Apple silicon macOS also <em>kills</em> a program whose signature it will not accept, with no dialog and nothing in Terminal but <code>killed</code>. These builds do not carry a signature macOS accepts, so the program has to be signed on your own Mac. That signature grants nothing and identifies no one; it only tells macOS the file is intact.</p>
