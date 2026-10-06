@@ -31,6 +31,16 @@ order: 2
 <h2>Bring your characters</h2>
 <p>Roleplay imports PNG and JSON character cards (V2 and V3), chat transcripts, presets, lorebooks, regex scripts, personas and themes in the formats the community already shares.</p>
 
+<h2>Find characters</h2>
+<p>Marketplace searches Chub and Datacat with character previews, tags and filters. Chub cards download directly. For Datacat, open the character on its website, complete download verification, then import the PNG or JSON card in Characters.</p>
+<p>Characters remembers your grid or list view and sort order. Recently imported uses the local import time; Recently chatted uses chat activity. Cards imported before import times were recorded sort after dated imports.</p>
+
+<h2>Large imports and card images</h2>
+<p>With an updated engine, archive imports upload in 8 MB chunks and read batches from disk. Progress shows bytes uploaded and files processed. Pause an import, then select the same file to resume. Completed batches are retained.</p>
+<p>The archive limits are 32 GB compressed, 256 GB expanded and one million files. Individual entries and card packages are limited to 64 MB. Oversized entries are reported. Upload speed depends on your connection; processing speed depends on the archive contents and storage.</p>
+<p>Card images live in separate files, shared when their contents match. Updating migrates existing cards automatically while preserving their metadata. If a migration cannot finish, the original card remains readable and conversion retries later. Portable JSON and PNG exports still include the artwork.</p>
+<p>These limits apply to data imports. The launcher’s app backup and the in-app backup export use separate paths.</p>
+
 <h2>Backups</h2>
 <p>There are two kinds, and both keep everything on your device:</p>
 <ul>
@@ -39,4 +49,4 @@ order: 2
 </ul>
 
 <h2>Updates</h2>
-<p>Roleplay updates on its own schedule, separately from Chrysalis. The launcher shows an <span class="badge">Update</span> badge when a new version is out. Updating merges it with anything you changed and never touches your chats or characters. See <a href="updating.html#apps">Updating apps</a>.</p>
+<p>Roleplay updates on its own schedule, separately from Chrysalis. The launcher shows an <span class="badge">Update</span> badge when a new version is out. Updating merges it with anything you changed and preserves your chats and character content. See <a href="updating.html#apps">Updating apps</a>.</p>

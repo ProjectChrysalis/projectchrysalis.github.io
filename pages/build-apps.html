@@ -56,6 +56,7 @@ order: 1
   <li>Tailwind v4 is built in: start <code>src/app.css</code> with <code>@import "tailwindcss";</code>.</li>
   <li>Any npm package in <code>package.json</code>. Packages install with their install scripts turned off.</li>
 </ul>
+<p>While an app builds, Chrysalis shows its current step. Hot updates show a small status label while the app stays usable.</p>
 <p>Bundler plugins and toolchain config files do not run, so single-file component formats that need a compiler plugin are not supported. Saving a file hot-updates the open app and keeps component state.</p>
 
 <h3>Talking to your plugins</h3>
@@ -128,3 +129,8 @@ const { notes } = await res.json()</code></pre>
 <h2>Learn from a real app</h2>
 <p><a href="https://github.com/ProjectChrysalis/Roleplay-Chrysalis">Roleplay</a> is a large app built this way: its <code>plugins/</code> show routes, two-pass model calls and data layout, and its <code>src/</code> is a full React frontend.</p>
 <p>Ready to share it? See <a href="publish.html">Publish to the Store</a>. For how plugins run, streaming, tools and prompt hooks, see <a href="plugins.html">The plugin system</a>.</p>
+
+<h2>Large archive imports</h2>
+<p>Apps can create a file-backed upload with <code>POST /v1/apps/&lt;id&gt;/__imports/new</code>, sending <code>{name, size, collections}</code>. Upload raw chunks with <code>PUT /__imports/&lt;job&gt;?offset=&lt;bytes&gt;</code>, then poll <code>GET /__imports/&lt;job&gt;</code> until indexing finishes. Chunks are limited to 8 MB. Collection prefixes order the archive for imports that resolve links by name.</p>
+<p><code>POST /__imports/&lt;job&gt;/batch</code> with <code>{cursor, route}</code> calls the app’s import route with a bounded <code>host.zip.entries()</code> map. Use the returned cursor for the next batch. Retry the same cursor after a lost response; the most recent completed result is retained. After all batches, call <code>POST /__imports/&lt;job&gt;/finish</code> with <code>{route}</code> to clean up app lookups and commit the written paths to history once. Delete the job after completion. Abandoned jobs expire after seven days.</p>
+<p><code>host.zip.image(name)</code> reads PNG text metadata and stores a stripped image, returning <code>{url, metadata}</code>. File-backed batches expose PNG entries as image descriptors so large image bytes stay outside the guest heap. <code>host.fs.media(dataUri)</code> writes deduplicated image files; <code>host.fs.lookup(collection, key, value)</code> stores small persistent lookup values for cross-batch links. These services require the existing filesystem and archive permissions. Each app can access only its own upload jobs and media.</p>
