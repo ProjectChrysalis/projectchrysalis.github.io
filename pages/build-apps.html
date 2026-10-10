@@ -56,6 +56,7 @@ order: 1
   <li>Tailwind v4 is built in: start <code>src/app.css</code> with <code>@import "tailwindcss";</code>.</li>
   <li>Any npm package in <code>package.json</code>. Packages install with their install scripts turned off.</li>
 </ul>
+<p>Remote builds batch asset checks and compress large build uploads. App startup scripts download together and run in order. Saves with known data changes record those files without a second full workspace scan.</p>
 <p>While an app builds, Chrysalis shows its current step. Hot updates show a small status label while the app stays usable.</p>
 <p>Bundler plugins and toolchain config files do not run, so single-file component formats that need a compiler plugin are not supported. Saving a file hot-updates the open app and keeps component state.</p>
 
@@ -134,3 +135,26 @@ const { notes } = await res.json()</code></pre>
 <p>Apps can create a file-backed upload with <code>POST /v1/apps/&lt;id&gt;/__imports/new</code>, sending <code>{name, size, collections}</code>. Upload raw chunks with <code>PUT /__imports/&lt;job&gt;?offset=&lt;bytes&gt;</code>, then poll <code>GET /__imports/&lt;job&gt;</code> until indexing finishes. Chunks are limited to 8 MB. Collection prefixes order the archive for imports that resolve links by name.</p>
 <p><code>POST /__imports/&lt;job&gt;/batch</code> with <code>{cursor, route}</code> calls the app’s import route with a bounded <code>host.zip.entries()</code> map. Use the returned cursor for the next batch. Retry the same cursor after a lost response; the most recent completed result is retained. After all batches, call <code>POST /__imports/&lt;job&gt;/finish</code> with <code>{route}</code> to clean up app lookups and commit the written paths to history once. Delete the job after completion. Abandoned jobs expire after seven days.</p>
 <p><code>host.zip.image(name)</code> reads PNG text metadata and stores a stripped image, returning <code>{url, metadata}</code>. File-backed batches expose PNG entries as image descriptors so large image bytes stay outside the guest heap. <code>host.fs.media(dataUri)</code> writes deduplicated image files; <code>host.fs.lookup(collection, key, value)</code> stores small persistent lookup values for cross-batch links. These services require the existing filesystem and archive permissions. Each app can access only its own upload jobs and media.</p>
+
+<h2>Skill data tools</h2>
+<p>To make agent inspection efficient, ship <code>.agents/skills/&lt;name&gt;/SKILL.md</code> with a precise description and optional <code>inspect.js</code> and <code>edit.js</code>. Use focused skills for each area of your app rather than loading all schemas for every task. The engine loads only the selected app's skills. Document the inspector's arguments and how to handle missing or ambiguous records in the skill.</p>
+<pre><code>export function inspect(args, host) {
+  const record = JSON.parse(host.fs.read("items/" + args.id + ".json"));
+  return { id: record.id, name: record.name, enabled: record.enabled };
+}</code></pre>
+<p>Inspectors are self-contained sandboxed JavaScript modules. <code>host.fs.read(path)</code> reads UTF-8 text and <code>host.fs.readVersioned(path)</code> returns <code>{text, revision}</code>, and <code>host.fs.list(path)</code> lists filenames, relative to this app's <code>data/</code>. Node imports and write methods are unavailable. Each call has a 2-second execution limit and a 32 MB sandbox memory limit. Reads are limited to 1 MB per file and 16 MB total, directory listings to 2,000 entries, and returned JSON to 64 KB. Narrow large requests rather than silently omitting results.</p>
+
+<p>For editing, export <code>edit(args, host)</code> from a self-contained <code>edit.js</code>. It has the same read-only sandbox: app code validates its schema and constructs a plan, while the engine performs the writes. Return <code>{writes: [{path, expectedRevision, content}], result}</code>. Paths are relative to app data. Use the revision returned by inspection for an existing file, or <code>null</code> to create a file that must not already exist.</p>
+<pre><code>export function edit(args, host) {
+  const file = "items/" + args.id + ".json";
+  const version = host.fs.readVersioned(file);
+  if (version.revision !== args.revision) throw new Error("Inspect the changed record again");
+  const record = JSON.parse(version.text);
+  if (typeof args.enabled !== "boolean") throw new Error("enabled must be boolean");
+  record.enabled = args.enabled;
+  return {
+    writes: [{ path: file, expectedRevision: args.revision, content: JSON.stringify(record) }],
+    result: { id: record.id, enabled: record.enabled }
+  };
+}</code></pre>
+<p><code>skill_edit</code> is unavailable in Plan mode. It validates every write before saving, checks revisions again at each write, and uses atomic file replacement. If a later write fails, it attempts to restore earlier writes that still contain its own saved content. Concurrent changes are preserved. Only JSON and JSONL are supported, with 1 to 20 unique files, 1 MB per file, an 8 MB plan, and a 64 KB result summary. Module source is limited to 32 KB and arguments to 16 KB. Saved files enter workspace history through the agent's usual commit path. Document unsupported operations and use existing app routes for operations with additional side effects.</p>

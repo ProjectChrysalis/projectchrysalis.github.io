@@ -6,6 +6,7 @@ order: 2
 -->
 <h1>Roleplay <span class="badge">Official</span></h1>
 <p class="lead">A roleplay studio for power users, built as a Chrysalis app. It works with every model provider Chrysalis connects to, and like every app you can ask the agent to change it.</p>
+<p>Ask the agent to inspect or edit characters, personas, presets, lorebooks, regex, chats, groups, settings, library collections, and data-bank documents. Roleplay includes a focused skill for each area, a data catalog, templates, and a field guide. The agent loads the relevant skill, inspects the target, and uses its revision when saving. Helpers preserve extra fields and inactive swipes. Structural chat actions use the existing app routes. Existing installs receive missing agent templates during updates; saved characters, personas, presets, chats, and settings stay in place. UI saves preserve extra metadata, combine rapid edits, and sync after pending writes finish so text and switches stay steady.</p>
 
 <h2>Install</h2>
 <ol class="steps">
@@ -22,11 +23,18 @@ order: 2
   <div class="card"><strong>Prompts and memory</strong><span>Presets with a drag-and-drop prompt manager, lorebooks, regex scripts, an Anthropic prompt-cache depth control, a running chat summary, a facts vault and a data bank.</span></div>
   <div class="card"><strong>More</strong><span>Tool calling, image generation, text to speech, quick replies, themes, a command palette, and a layout made for phones.</span></div>
 </div>
+<p>Swipes slide the avatar and reply out, then bring the next reply in from the opposite side. Generating a new swipe uses the same transition. Faster repeated swipes shorten the animation; Reduced Motion skips it.</p>
 <p>Stop keeps the reply received so far. Provider errors keep partial replies too and show the error. Stopping Continue extends the current reply. If saving fails, the reply stays on screen with a Retry action.</p>
 
 <p>When Roleplay exports a file, click <span class="ui">Save file</span> in Chrysalis to finish the download.</p>
 
 <p>Roleplay 4.19 requires Chrysalis 1.0.3 or newer.</p>
+
+<p>In a preset’s Reasoning tab, Thinking history chooses Preserve across turns (default) or Each reply only. Preserve sends saved thinking and provider signatures with later turns using the same provider and model. Each reply only keeps thinking for viewing. Providers decide which native thinking they retain. Compact history folds readable thinking into text and cannot retain native signatures.</p>
+<p>Edit thinking changes the saved text and clears signatures that no longer match. Edited thinking is sent as ordinary context in Preserve mode. Remove thinking clears the reply’s thought text and signatures while keeping reply text and tool results. Each swipe keeps its own thinking, including replies stopped mid-stream. Switching swipes restores the chosen reply’s thinking and measured thinking time. Older replies can reuse saved thinking text, but missing signatures cannot be recovered.</p>
+
+<h2>Notifications</h2>
+<p>In Roleplay’s <span class="ui">Settings</span> &gt; <span class="ui">Notifications</span>, choose popup types and areas, such as chat actions, imports, memory and tools. Popups start at the bottom; Position lets you choose another corner or center. Popups use neutral borders. A popup appears only when its type and area are both on. Turn off Successes, Tips and information, and Progress to keep only warnings and errors, or turn off Show notifications to hide all popups. Preferences save automatically.</p>
 
 <h2>Bring your characters</h2>
 <p>Roleplay imports PNG and JSON character cards (V2 and V3), chat transcripts, presets, lorebooks, regex scripts, personas and themes in the formats the community already shares.</p>

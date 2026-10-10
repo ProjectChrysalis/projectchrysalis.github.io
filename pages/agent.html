@@ -19,6 +19,13 @@ order: 4
 </ul>
 <p>When the agent saves a file, an open app updates in place without losing what you were doing. After each change the agent waits for the app to build and reads any errors, so it fixes its own mistakes before telling you it is done.</p>
 
+<h2>Choose an app</h2>
+<p>The app picker beside the composer sets the app this conversation works on. Chats keep their own selection when you switch tabs or reopen them. General questions need no app. If your request does not identify an app, the agent asks which one you mean.</p>
+<h2>App skills</h2>
+<p>Apps can ship <code>.agents/skills/&lt;name&gt;/SKILL.md</code> files with YAML <code>name</code> and <code>description</code> fields, followed by instructions. Only the selected app's skill descriptions enter the agent context. The agent loads matching instructions as needed. Type <code>/</code> to choose a skill explicitly and add your task.</p>
+<p>A skill can also provide a self-contained <code>inspect.js</code> module exporting <code>inspect(args, host)</code>. The agent calls it through <code>skill_inspect</code> after loading the skill. It works in Plan mode without a command shell. The inspector can only read text (including a revision) and list files in its app's <code>data/</code> directory; writes, network access, model calls, and processes are unavailable. The skill documents its arguments and returns only the requested facts.</p>
+<p>A skill may also supply <code>edit.js</code>. The agent inspects the target first, then calls <code>skill_edit</code> with the revision and requested changes. The app helper preserves its schema; the engine checks the returned write plan and rejects stale records before saving. Editing is unavailable in Plan mode. Roleplay supplies focused skills for characters, personas, presets, lorebooks, regex, chats, groups, settings, library collections, and data-bank documents. Only the skills needed for the task are loaded.</p>
+<p>Loaded instructions survive compaction and refresh when the app's files change. Selecting another app replaces the active instructions. Skills do not expand permissions or run scripts automatically. They update with the app's code, including the usual handling of local changes.</p>
 <h2>Everything can be undone</h2>
 <p>Your workspace (your apps and their data) is a git repository. Every file the agent writes is saved to its history under its name, so you can ask it to show what changed or to put a file back the way it was. Updates and imports are saved to the same history.</p>
 
@@ -50,6 +57,7 @@ order: 4
 <p>The agent follows the language selected in the shell.</p>
 
 <h2>Long sessions</h2>
+<p>Settings opens the app, model and mode selectors at every screen size. The composer stays short, and longer drafts scroll within the message field to leave room for the conversation when the keyboard opens. Context shows the last request’s reported usage; tap it for token counts and the context meter. Compact conversation is inside that panel, away from Send.</p>
 <p>The agent trims older tool output when a request grows too large, while preserving its instructions, tools and your current request. Use <code>/compact</code> to summarize the session; saved history stays available. Large sessions are summarized in as many chunks as needed.</p>
 <p>New runs record the selected model so compaction keeps using it after a restart. If that connection is unavailable, compaction stops instead of switching to another one. Stop an active run before compacting it.</p>
 
@@ -61,7 +69,7 @@ order: 4
   <li><strong>Plans, specs and reference material</strong> &mdash; the <code>notes/</code> folder in your workspace, one markdown file per topic. The agent sees every file listed by name and first line, and opens the ones that bear on what you asked for. Make the first line say what the file covers, since that is what it reads in the list. Ask the agent to write one (&ldquo;put the plan in notes/&rdquo;) or drop your own files in.</li>
 </ul>
 <p>Prefer your own editor and coding agent? They work on the same files &mdash; see <a href="your-own-tools.html">Bring your own tools</a>.</p>
-<p>Each installed app also carries its own <code>AGENTS.md</code> describing how that app is built, and the agent is given the active app's copy in full. Edit it to change how the agent works on that app &mdash; Chrysalis never overwrites a file you have changed.</p>
+<p>Each installed app also carries its own <code>AGENTS.md</code> describing how that app is built, and the agent is given the selected app's copy, with a file pointer if it exceeds the context limit. Edit it to change how the agent works on that app &mdash; Chrysalis never overwrites a file you have changed.</p>
 
 <h2>How it works</h2>
 <p>How edits reach an open app, and the tools the agent uses to check its own work, are on <a href="live-editing.html">Live editing</a>.</p>

@@ -42,6 +42,9 @@ order: 2
 <h3>One tab builds at a time</h3>
 <p>With the same app open in several tabs or devices, one holds the build lease and the others receive its output. If that tab closes or hangs, another takes over. Every open copy loads the same update files, so they all stay in step.</p>
 
+<p>The app bridge keeps its storage snapshot current as the app saves. A frame reload restores the latest saved app state, including Roleplay’s active chat.</p>
+<p>Reloading or closing an app also closes its old stream connections, so a reply’s text arrives once.</p>
+
 <h3>When a page reloads instead</h3>
 <p>Hot updates are always on, but some changes cannot be applied in place. The page reloads when:</p>
 <ul>

@@ -92,6 +92,8 @@ order: 3
 </table>
 <p>The result has <code>text</code>, <code>reasoning</code> when the model thought out loud, <code>json</code> for a schema, the <code>model</code> that answered, and <code>usage</code> with tokens and cost. A failed call has <code>model: "error"</code> and the reason in <code>error</code>.</p>
 
+<p>Completed chat generations also return <code>replay: { text, messages }</code>, containing the original assistant blocks, signatures and tool results. Save it unchanged and attach it as <code>replay</code> to the corresponding assistant turn in a later request. Its <code>text</code> must match that turn’s <code>content</code>; the engine replays it only on the original provider, API and model. A different model receives the ordinary reply text. Unsigned thinking can be supplied as <code>reasoning</code> with <code>reasoningModel</code> naming the original model; it is sent as ordinary context only to that model. Aborted replies do not return native replay data.</p>
+
 <h2>Streaming replies to the page</h2>
 <p>Add a <code>stream</code> descriptor and the reply streams to the app's open pages while the plugin waits for the whole thing:</p>
 <pre><code>host.llm.request("reply", {
