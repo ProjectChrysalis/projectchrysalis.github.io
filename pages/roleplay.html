@@ -41,7 +41,9 @@ order: 2
 <p>Roleplay imports PNG and JSON character cards (V2 and V3), chat transcripts, presets, lorebooks, regex scripts, personas and themes in the formats the community already shares.</p>
 
 <h2>Find characters</h2>
-<p>Marketplace searches Chub and Datacat with character previews, tags and filters. Chub cards download directly. Public Datacat cards import directly with artwork, attribution and embedded lore. Creator restrictions and unavailable definitions remain blocked. Search character or creator names and tags, or browse a creator’s catalog. Its official file-download endpoint may still require verification on Datacat.</p>
+<p>Marketplace searches Chub, Datacat, Wyvern and Character Tavern with character previews, tags and filters. Previews render Markdown, with Core, First messages, Dialogue, Lorebook and Advanced tabs, embedded entry previews, and import controls that stay visible on mobile. Character Tavern uses its current public catalog and imports complete downloadable cards. Its results follow guest content settings. Wyvern supports adult filters and public character search, tags, popularity, newest, likes and message counts, with direct imports of artwork, alternate greetings, embedded lore and regex. Private definitions stay blocked. Chub cards download directly. Public Datacat cards import directly with artwork, attribution and embedded lore. Creator restrictions and unavailable definitions remain blocked. Search character or creator names and tags, or browse a creator’s catalog. Its official file-download endpoint may still require verification on Datacat.</p>
+<p>Character imports report embedded lorebooks and regex scripts. Cards with embedded lore ask Import or Later. Import creates a book linked to that character. Later keeps the lore inside the card without activating it; import it from the character editor’s Lorebook tab when ready. Embedded regex starts off unless you choose Enable embedded regex on import; scripts disabled in the source stay off. Opening a chat shows a notice for linked lore and scoped regex, once per character or preset per page session, with a shortcut to review it. The character editor shows linked lore and script counts at the top, with switches for each script. Preset imports ask Enable or Keep off when scripts are included. Only the active preset shows a compact regex count and a shortcut to the Regex manager. The manager groups scripts by scope, owner and folder, with search and direct enable switches. Imported folders survive saves and exports. Standalone regex imports use the same enable choice. Open a script to edit and test it in Tools &gt; Regex, or search by script name, owner and scope.</p>
+<p>Characters &gt; Import &gt; From URL accepts Chub, CharacterHub, Pygmalion, Realm and AI Character Cards links, one per line. These are URL imports; Marketplace search covers Chub and Datacat. PNG and JSON files can also come from other apps that export character cards.</p>
 <p>Characters remembers your grid or list view and sort order. Recently imported uses the local import time; Recently chatted uses chat activity. Cards imported before import times were recorded sort after dated imports.</p>
 
 <h2>Large imports and card images</h2>
@@ -50,6 +52,10 @@ order: 2
 <p>Card images live in separate files, shared when their contents match. Updating migrates existing cards automatically while preserving their metadata. If a migration cannot finish, the original card remains readable and conversion retries later. Portable JSON and PNG exports still include the artwork.</p>
 <p>These limits apply to data imports. The launcher’s app backup and the in-app backup export use separate paths.</p>
 
+<p>Lorebooks, personas and presets remember the last item, editor tab, expanded lore entries and scroll position in this browser tab. Connections starts with 40 models; search covers the full catalog and Show more reveals additional rows. Message model icons update when generation starts and follow the selected reply afterward. Thinking borders and Markdown dividers use higher contrast.</p>
+<h2>Search chats</h2>
+<p>Chats searches names, titles and saved messages across your library, including chats you have not opened. Open Search filters to choose Messages only or Names and titles, or narrow results by character. Folder chips appear when you have folders. All search words must occur somewhere in the chat; use quotes for an exact phrase. Results show a highlighted excerpt and matching message counts. Click an excerpt to open that message, including older turns. Search covers active replies, so unused swipes and image prompts do not appear. Missing or unreadable chat files are reported.</p>
+<p>The message input keeps its height while the app tab is hidden and refits when you return, resize the window or load a font.</p>
 <h2>Backups</h2>
 <p>There are two kinds, and both keep everything on your device:</p>
 <ul>
@@ -60,6 +66,19 @@ order: 2
 <h2>Updates</h2>
 <p>Roleplay updates on its own schedule, separately from Chrysalis. The launcher shows an <span class="badge">Update</span> badge when a new version is out. Updating merges it with anything you changed and preserves your chats and character content. See <a href="updating.html#apps">Updating apps</a>.</p>
 
+<p>The composer’s Speak as menu shows titles beside personas with the same name and different titles.</p>
 <p>Use the Lore button in the chat header, or Chat lorebooks in its menu, to select lorebooks for that chat. Search the library and remove selected books using their chips. Lorebook activity shows which entries fired. These apply alongside character, persona and global lore. Branches keep the selection, and backups preserve it.</p>
 
-<p>To give the coding agent a specific message, choose <span class="ui">Use as agent context</span> in its menu, then the <span class="ui">Attach</span> button showing that message’s name in agent Settings. Preset selection and current chat IDs can also be attached. See <a href="agent.html">The agent</a>.</p>
+<p>Preset selection and current chat IDs can be attached in agent Settings. See <a href="agent.html">The agent</a>.</p>
+
+<p>The home page’s daily character rotates through the full character library and refreshes at midnight or when you return to the page.</p>
+
+<p>Chat and marketplace images share a lightbox with pinch zoom, dragging, zoom buttons and reset. On phones it fills the screen. Connection model lists load more rows as you scroll, while search covers the full catalog.</p>
+
+<p>Preset editors have extra scrolling space below their controls on phones. Numeric fields preserve an empty draft while editing, so deleting a value does not immediately refill the input.</p>
+
+<p>Model prices use compact decimal formatting, keeping small rates visible without floating-point artifacts.</p>
+
+<p>The Tools header and tab buttons scroll with the page, including the Regex workspace.</p>
+
+<p>Markdown dividers use a brighter line. Thinking panels keep their muted text and standard borders.</p>

@@ -17,6 +17,9 @@ order: 1
 </ul>
 <p>Official status comes from where Chrysalis installed an app from, never from anything the app says about itself.</p>
 
+<h2>Service apps</h2>
+<p>Service apps require the staging build. They run a program on the computer hosting Chrysalis and show its page in a tab. An admin approves the program before it starts. Each app uses a separate port next to the engine port, which must be reachable from other devices.</p>
+
 <h2>Import from git</h2>
 <p>Any app in a public git repository can be installed without the Store:</p>
 <ol class="steps">
@@ -27,7 +30,7 @@ order: 1
 <p>The app updates from that repository from then on. SSH addresses (<code>git@…</code>) need git installed on the server; <code>https://</code> addresses work everywhere, including Android.</p>
 
 <h2>Back up an app</h2>
-<p>Select an app in the launcher and click the download button (<span class="ui">Export app</span>) next to <span class="ui">Check for updates</span>. Your browser saves a zip named like <code>roleplay-backup-2026-09-13.zip</code> with:</p>
+<p>Select an app in the launcher and click the download button (<span class="ui">Export app</span>) in the app details header. Your browser saves a zip named like <code>roleplay-backup-2026-09-13.zip</code> with:</p>
 <ul>
   <li>the app's files, including your own changes and plugins you added;</li>
   <li>its data: chats, characters and whatever else the app stores;</li>
@@ -78,4 +81,10 @@ order: 1
 <p><span class="ui">New app</span> in the launcher makes a starter app and hands it to the <a href="agent.html">agent</a>, which builds it with you. See <a href="build-apps.html">Build an app</a> for how apps are put together.</p>
 
 <h2>Delete an app</h2>
-<p>Hover the app in the launcher and click its delete button, then confirm. The whole app goes, including its data. Export a backup first if you might want it back.</p>
+<p>Hover the app in the launcher and click its delete button, then type the app’s name exactly to enable <span class="ui">Delete app</span>. The whole app goes, including its data. Export a backup first if you might want it back.</p>
+
+<p>App details separate <span class="ui">Files</span> and <span class="ui">Update</span>. Check and apply updates in the Update tab. The header keeps Launch, repository and export controls compact on mobile, and long update reviews scroll with the page.</p>
+
+<p>If an app’s recorded commit is missing, update checks compare its code and saved baseline with the repository. Matching code is up to date; changes within the same version are shown as repository changes.</p>
+
+<p>Install records keep the upstream commit outside editable app files. Older installs without a commit reuse the repository comparison while the engine is running, so repeated checks do not download the same code again.</p>

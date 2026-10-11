@@ -38,8 +38,9 @@ codesign --force --sign - chrysalis
 <ul>
   <li>Check that <span class="ui">Allow other devices on my network</span> is on in <span class="ui">Settings</span> &gt; <span class="ui">Server</span>.</li>
   <li>Both devices need to be on the same network. Guest Wi-Fi networks often keep devices apart.</li>
-  <li>Allow Chrysalis, or its port, through the computer's firewall. Windows asks the first time it listens on the network.</li>
-  <li>Opening it by a name rather than an IP address? Add that name under <span class="ui">Host names</span>.</li>
+  <li>Let Chrysalis through the computer's firewall: in <span class="ui">Settings</span> &gt; <span class="ui">Server</span>, press <span class="ui">Allow on this network</span> if it is shown. Windows also asks the first time Chrysalis listens on the network.</li>
+  <li>Chrysalis opens but an app's tab says the page is not loading? That app runs its own program on one of the 16 ports after Chrysalis's own. The same button allows them all.</li>
+  <li>Opening it by a name rather than an IP address? Add that name under <span class="ui">Host names</span>. Several names are separated by commas, and <code>*.example.com</code> allows every name under <code>example.com</code>.</li>
 </ul>
 
 <h2>The microphone does not work on my phone</h2>
@@ -54,7 +55,6 @@ codesign --force --sign - chrysalis
 <h2>An app shows a blank page or an error</h2>
 <ul>
   <li>Ask the agent: "the app shows a blank page, find out why". It can read the app's build errors and the errors the page reported.</li>
-  <li><span class="ui">Settings</span> &gt; <span class="ui">Developer</span> lists each app's last build.</li>
   <li>If it started after a change, ask the agent to put the app back the way it was before that change.</li>
 </ul>
 

@@ -11,9 +11,11 @@ order: 1
 <ol class="steps">
   <li>On the computer, open <span class="ui">Settings</span> &gt; <span class="ui">Server</span>. Only the admin account sees this tab.</li>
   <li>Turn on <span class="ui">Allow other devices on my network</span>. It applies right away.</li>
+  <li>If a firewall note appears under the QR code, press <span class="ui">Allow on this network</span> and type the computer's password when it asks. This lets devices on your local network reach Chrysalis and the apps that run their own program. It never opens them to the internet.</li>
   <li>Scan the QR code with your phone's camera, or type the address shown under it.</li>
 </ol>
-<p>Every account still needs its password from the phone. If the phone cannot connect, check that both devices are on the same network and that the computer's firewall allows the port (8788 unless you changed it).</p>
+<p>Every account still needs its password from the phone. If the phone cannot connect, check that both devices are on the same network.</p>
+<p>The firewall note only shows when Chrysalis finds a firewall it knows on that computer. The password prompt appears on the computer running Chrysalis, even when you press the button from another device. If the prompt cannot be shown there, the page gives a command to run on that computer instead. Chrysalis uses its own port and the 16 after it (8788 to 8804 unless you changed the port).</p>
 
 <h2>Away from home</h2>
 <p>Put the computer and the phone on the same private network with <a href="https://tailscale.com">Tailscale</a>, then open the computer's Tailscale address on the phone. If you use its Tailscale name rather than the IP address, add that name under <span class="ui">Host names</span> in <span class="ui">Settings</span> &gt; <span class="ui">Server</span>.</p>
