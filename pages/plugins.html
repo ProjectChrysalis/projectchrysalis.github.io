@@ -13,7 +13,9 @@ order: 3
   <li><strong>Fresh every time.</strong> Each call loads <code>plugin.js</code> from scratch. Nothing kept in a module variable survives to the next request, so state belongs in <code>host.store</code> or <code>host.fs</code>.</li>
   <li><strong>Synchronous.</strong> Exports are plain functions. There is no <code>await</code> on the network or a model; those calls work in passes (below). <code>fetch</code> does not exist inside the sandbox.</li>
   <li><strong>Logged.</strong> <code>console.log</code> and <code>host.log</code> go to the server log, prefixed with the plugin's id.</li>
-  <li><strong>Bounded.</strong> One pass may run for 10 seconds and use 64 MB of memory. A plugin that runs over, crashes or corrupts the runtime loses only its worker, which restarts on the next call. The engine keeps serving.</li>
+  <li><strong>Bounded.</strong> One pass may use 256 MB of memory and run for 30 seconds in a route, 10 in anything else. A plugin that runs over, crashes or corrupts the runtime loses only its worker, which restarts on the next call. The engine keeps serving.</li>
+  <li><strong>Side by side.</strong> Calls run on several workers at once. <code>GET</code> routes of one app read its folder together; any other call has the folder to itself while it runs, so a read-modify-write is never interleaved.</li>
+  <li><strong>Reads are remembered.</strong> A <code>GET</code> route that only read files and the store is answered again from memory until one of those files or folders changes. A route that writes, calls a model or the web, or reads the clock or a random number always runs.</li>
 </ul>
 <p>Modern syntax is fine: QuickJS supports ES2023. Helper functions belong at the top level of the module; a function declared inside a block is only visible in that block.</p>
 
@@ -145,6 +147,7 @@ export function handleTool(name, args, host) {
   <li>A hook that crashes is skipped and the request goes ahead. Model requests a hook makes itself are not hooked again.</li>
 </ul>
 <p>This is how you add a feature to an app without touching its code: drop in a plugin that adds memory, a style guide or a translation step to every prompt.</p>
+<p>A preview route with <code>llm</code> permission can return <code>{ status: 200, __llmPreview: "reply", json: request }</code>. The engine runs the same request hooks using that key and returns the patched request, without generating a reply. Use the same key and request fields as the real send. Hooks run normally, so their own side effects still apply.</p>
 
 <p>Stream decoding selects top-level string fields only, in the order they arrive. Nested metadata is skipped. Escapes and literal replacements can span chunks. If no selected field appears, decoding falls back to at most 64 KB of the raw response.</p>
 
@@ -177,6 +180,9 @@ export function handleTool(name, args, host) {
 
 <h2>Embeddings</h2>
 <p>Any plugin with <code>llm</code> can turn text into vectors with <code>host.llm.embed(key, { texts, model })</code> on one pass and read <code>host.llm.embedResults[key]</code>, an array of number arrays, on the next. Store the vectors with <code>host.fs</code> to build search or long-term memory. The embedding model comes from <span class="ui">Settings</span> unless the request names one.</p>
+
+<h2>Fast pattern matching</h2>
+<p>Plugin code runs in an interpreter, and a regular expression that scans long text can take seconds there. <code>host.regex.matches(source, flags, text)</code> runs the pattern in Chrysalis itself and returns every match as <code>{ index, match, groups, named }</code>, one entry when the flags have no <code>g</code>. A group that did not take part is <code>null</code>. Build the replacement text in the plugin. No permission is needed.</p>
 
 <h2>Timers, updates and panels</h2>
 <table>
