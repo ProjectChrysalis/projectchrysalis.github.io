@@ -121,3 +121,10 @@ defaultModel: null</code></pre>
 <p>Server terminal LLM traces print indented request JSON with complete message fields. Newlines stay escaped inside JSON strings. Thinking and tool results print in full, with brighter section separators when terminal colors are enabled.</p>
 
 <p>OpenAI-compatible connections accept a clean stream ending without a finish reason, keeping the generated reply. Provider errors and connection failures still report an error.</p>
+
+<p>When Google blocks a prompt before generating a reply, Chrysalis reports the provider's block reason and response ID. A stream that ends without either a finish reason or prompt feedback still reports an incomplete stream.</p>
+
+<h2 id="openrouter-routing">OpenRouter routing</h2>
+<p>In <span class="ui">Settings → API connections</span>, add or edit an OpenRouter connection and expand <span class="ui">OpenRouter routing</span>. Set provider priority, allowed or blocked providers, fallback behavior, parameter support, data collection, zero data retention, quantizations, sorting, and input or output price caps.</p>
+<p>Choose providers by name from the searchable OpenRouter catalog. Check the providers you want, and use the arrow buttons to change priority. Quantizations are selectable too. Price caps are dollars per million tokens. Empty lists, blank fields, and <span class="ui">OpenRouter default</span> leave the choice to OpenRouter. Saved fields apply to every app using the connection and take precedence over request preferences. Choose <span class="ui">Reset routing</span> and save to remove them.</p>
+<p>Restrictions can leave no matching endpoint. See <a href="https://openrouter.ai/docs/guides/routing/provider-selection">OpenRouter’s provider routing guide</a> for provider slugs and routing behavior.</p>
