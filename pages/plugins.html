@@ -27,7 +27,7 @@ order: 3
   src/
     routes.js          import { readNote } from "./notes.js"
     notes.js</code></pre>
-<p>Only files inside the folder load: links, hidden files and <code>node_modules</code> are skipped, and package imports do not resolve. Editing any of the files reloads the plugin on its next call.</p>
+<p>Only files inside the folder load: links, hidden files and <code>node_modules</code> are skipped, and package imports do not resolve. Editing any of the files reloads the plugin on its next call. Shortly after, the engine runs the plugin as one bundled module, which is as fast as a single file.</p>
 
 <h2>Where plugins come from</h2>
 <p>Each folder in an app's <code>plugins/</code> is one plugin, known to the engine as <code>&lt;app&gt;__&lt;folder&gt;</code>. Its manifest declares what it needs:</p>
