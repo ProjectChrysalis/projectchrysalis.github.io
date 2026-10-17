@@ -109,7 +109,7 @@ const { notes } = await res.json()</code></pre>
 <table>
   <thead><tr><th></th><th>Permission</th><th>What it does</th></tr></thead>
   <tbody>
-    <tr><td><code>host.fs</code></td><td><code>fs</code></td><td><code>read</code>, <code>readBase64</code>, <code>write</code>, <code>list</code> and <code>remove</code>, inside the app's <code>data</code> folder only.</td></tr>
+    <tr><td><code>host.fs</code></td><td><code>fs</code></td><td><code>read</code>, <code>readMany</code> (many files in one call), <code>readBase64</code>, <code>write</code>, <code>list</code> and <code>remove</code>, inside the app's <code>data</code> folder only.</td></tr>
     <tr><td><code>host.store</code></td><td><code>store</code></td><td><code>get</code>, <code>put</code>, <code>delete</code> and <code>keys</code> on the plugin's own saved values.</td></tr>
     <tr><td><code>host.llm</code></td><td><code>llm</code></td><td>Model calls through the user's connections, in two passes (below).</td></tr>
     <tr><td><code>host.net</code></td><td><code>network</code></td><td>Web requests in two passes, like <code>host.llm</code>, only to the hosts listed in the manifest's <code>networkHosts</code>.</td></tr>

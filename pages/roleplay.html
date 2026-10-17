@@ -19,7 +19,7 @@ order: 2
 <h2>Features</h2>
 <div class="cards">
   <div class="card"><strong>Chats</strong><span>Streaming replies with swipes, continue, impersonate and stop. Edit, hide, bookmark and branch any message. Group chats with turn order and muting.</span></div>
-  <div class="card"><strong>Characters and personas</strong><span>A tabbed character editor, alternate greetings, tags and folders, personas per chat, expression sprites and a card marketplace browser.</span></div>
+  <div class="card"><strong>Characters and personas</strong><span>A tabbed character editor, alternate greetings, tags and folders, personas you can lock to a chat or character, expression sprites and a card marketplace browser.</span></div>
   <div class="card"><strong>Prompts and memory</strong><span>Presets with a drag-and-drop prompt manager, lorebooks, regex scripts, an Anthropic prompt-cache depth control, a running chat summary, a facts vault and a data bank.</span></div>
   <div class="card"><strong>More</strong><span>Tool calling, image generation, text to speech, quick replies, themes, a command palette, and a layout made for phones.</span></div>
 </div>
@@ -49,8 +49,14 @@ order: 2
 <p>Characters remembers your grid or list view and sort order. Recently imported uses the local import time; Recently chatted uses chat activity. Cards imported before import times were recorded sort after dated imports.</p>
 
 <h2>Large imports and card images</h2>
-<p>With an updated engine, archive imports upload in 8 MB chunks and read batches from disk. Progress shows bytes uploaded and files processed. Pause an import, then select the same file to resume. Completed batches are retained.</p>
+<p>With an updated engine, archive imports upload in 8 MB chunks and read batches from disk. Progress shows bytes uploaded and files processed. Pause from the progress notice, then select the same file to continue.</p>
+<p>Once the archive is uploaded, Roleplay lists what it found, with a file count per category: characters, lorebooks, presets, instruct and context templates, regex scripts, personas, groups, chats, group chats, quick replies, themes and data bank files. Untick anything you do not want. Instruct and context templates start unticked and become presets of their own. Folders outside these categories, such as backgrounds and thumbnails, are never read.</p>
+<p>The engine then runs the import itself, so you can leave Settings, reload or close the page and it keeps going. <span class="ui">Settings</span> &gt; <span class="ui">Import</span> shows its progress with Pause, Resume and Cancel. An import that was running when the engine stopped picks up again the next time Roleplay opens. Cancel keeps what was already imported.</p>
+<p>A zipped data folder from another app imports linked up: chats find their character by the card's file name, group chats find their group, expression sprites in a character's folder join that card, cards that name a world book are linked to it, and a chat locked to a persona stays locked. Personas, their pictures, global regex scripts and the quick reply sets on show come from that app's settings file. Quick reply sets import without their automation.</p>
+<p>Importing the same things again: a preset named like one you have replaces it in place, keeping its chats and scripts. A regex script you already have, either for everything or on the same preset or card, is not added again, and neither is a persona with the same name and description. Characters, lorebooks and chats import as new copies.</p>
+<p>Large libraries load in parts, so thousands of characters, lorebooks and scripts open without hitting the engine's limits.</p>
 <p>The archive limits are 32 GB compressed, 256 GB expanded and one million files. Individual entries and card packages are limited to 64 MB. Oversized entries are reported. Upload speed depends on your connection; processing speed depends on the archive contents and storage.</p>
+<p>Cards from an archive keep their full-size image. Cards chosen as files get a 512 px copy unless <span class="ui">Keep full-size card art</span> is on in <span class="ui">Settings</span> &gt; <span class="ui">Import</span>.</p>
 <p>Card images live in separate files, shared when their contents match. Updating migrates existing cards automatically while preserving their metadata. If a migration cannot finish, the original card remains readable and conversion retries later. Portable JSON and PNG exports still include the artwork.</p>
 <p>These limits apply to data imports. The launcher’s app backup and the in-app backup export use separate paths.</p>
 
@@ -71,7 +77,8 @@ order: 2
 <p>Roleplay updates on its own schedule, separately from Chrysalis. The launcher shows an <span class="badge">Update</span> badge when a new version is out. Updating merges it with anything you changed and preserves your chats and character content. See <a href="updating.html#apps">Updating apps</a>.</p>
 
 <p>The composer’s Speak as menu shows titles beside personas with the same name and different titles.</p>
-<p>Use the Lore button in the chat header, or Chat lorebooks in its menu, to select lorebooks for that chat. Search the library and remove selected books using their chips. Lorebook activity shows which entries fired. These apply alongside character, persona and global lore. Branches keep the selection, and backups preserve it.</p>
+<p>Every chat uses the current preset and persona unless it is locked. In the chat's quick switch, Lock to this chat keeps the preset or persona on that chat, and Lock to the character's name keeps a persona on every chat with that character or group. A lock icon on the switch shows a chat is locked. Picking another preset or persona while locked moves the lock. Personas list the characters they are locked to, and the character editor shows its locked persona. Unlocked chats change with the current choice.</p>
+<p>Use the Lore button in the chat header, or Chat lorebooks in its menu, to select lorebooks for that chat. The dialog also lists the books the character brings, and the button counts both. Search the library and remove selected books using their chips. Lorebook activity shows which entries fired. These apply alongside character, persona and global lore. Branches keep the selection, and backups preserve it.</p>
 
 <p>Preset selection and current chat IDs can be attached in agent Settings. See <a href="agent.html">The agent</a>.</p>
 
