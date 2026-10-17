@@ -19,6 +19,16 @@ order: 3
 </ul>
 <p>Modern syntax is fine: QuickJS supports ES2023. Helper functions belong at the top level of the module; a function declared inside a block is only visible in that block.</p>
 
+<h2>Splitting a plugin into files</h2>
+<p><code>plugin.js</code> is the entry, and the engine calls the exports it has. A bigger plugin can keep its code in more <code>.js</code> or <code>.mjs</code> files anywhere in its folder and import them by relative path. This needs Chrysalis 1.0.5 or newer.</p>
+<pre><code>plugins/notes/
+  manifest.json
+  plugin.js            export { handleRoute } from "./src/routes.js"
+  src/
+    routes.js          import { readNote } from "./notes.js"
+    notes.js</code></pre>
+<p>Only files inside the folder load: links, hidden files and <code>node_modules</code> are skipped, and package imports do not resolve. Editing any of the files reloads the plugin on its next call.</p>
+
 <h2>Where plugins come from</h2>
 <p>Each folder in an app's <code>plugins/</code> is one plugin, known to the engine as <code>&lt;app&gt;__&lt;folder&gt;</code>. Its manifest declares what it needs:</p>
 <pre><code>{

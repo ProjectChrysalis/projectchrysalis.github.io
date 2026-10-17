@@ -69,7 +69,7 @@ order: 2
 <p>That is why the agent works best with the app open beside it: the open page is what builds the app and reports its errors.</p>
 
 <h2>Plugins update on the next request</h2>
-<p>Plugins are not built. The engine reads each plugin's <code>plugin.js</code> and <code>manifest.json</code> fresh whenever either file changes, and every call evaluates the module from scratch in the sandbox, so the next request runs the new code. Changes to a plugin's permissions take effect the same way.</p>
+<p>Plugins are not built. The engine reads each plugin's <code>plugin.js</code>, the modules it keeps beside it and its <code>manifest.json</code> fresh whenever one of them changes, and every call evaluates the module from scratch in the sandbox, so the next request runs the new code. Changes to a plugin's permissions take effect the same way.</p>
 
 <h2>Data changes reach open pages</h2>
 <p>When anything under an app's <code>data/</code> folder changes, open copies of the app receive a <code>look_changed</code> event with the paths. The app decides what to do; Roleplay re-reads the affected characters, chats or lorebooks. This is how a character the agent edits shows up in an open chat without a refresh.</p>
