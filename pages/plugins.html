@@ -11,6 +11,7 @@ order: 3
 <p>Every plugin call runs in QuickJS, a small JavaScript engine compiled to WebAssembly, inside a worker thread of the engine:</p>
 <ul>
   <li><strong>Fresh every time.</strong> Each call loads <code>plugin.js</code> from scratch. Nothing kept in a module variable survives to the next request, so state belongs in <code>host.store</code> or <code>host.fs</code>.</li>
+  <li><strong>Or kept loaded.</strong> With <code>"keepLoaded": true</code> in the manifest, the plugin loads once and later calls reuse it, which saves the load on every request (about 20 ms for a large plugin). Module variables may then outlive a call, but not reliably: keep them to constants and reset anything else when a call starts. <code>host</code> works only during its own call. Needs Chrysalis 1.0.6 or newer; older versions ignore it.</li>
   <li><strong>Synchronous.</strong> Exports are plain functions. There is no <code>await</code> on the network or a model; those calls work in passes (below). <code>fetch</code> does not exist inside the sandbox.</li>
   <li><strong>Logged.</strong> <code>console.log</code> and <code>host.log</code> go to the server log, prefixed with the plugin's id.</li>
   <li><strong>Bounded.</strong> One pass may use 256 MB of memory and run for 30 seconds in a route, 10 in anything else. A plugin that runs over, crashes or corrupts the runtime loses only its worker, which restarts on the next call. The engine keeps serving.</li>
