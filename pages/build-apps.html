@@ -109,7 +109,7 @@ const { notes } = await res.json()</code></pre>
 <table>
   <thead><tr><th></th><th>Permission</th><th>What it does</th></tr></thead>
   <tbody>
-    <tr><td><code>host.fs</code></td><td><code>fs</code></td><td><code>read</code>, <code>readMany</code> (many files in one call), <code>readBase64</code>, <code>write</code> (up to 512 MB), <code>append</code> (adds to the end of a file), <code>list</code> and <code>remove</code>, inside the app's <code>data</code> folder only.</td></tr>
+    <tr><td><code>host.fs</code></td><td><code>fs</code></td><td><code>read</code>, <code>readMany</code> (many files in one call), <code>readBase64</code>, <code>write</code> (up to 512 MB), <code>append</code> (adds to the end of a file), <code>list</code> and <code>remove</code>, inside the app's <code>data</code> folder only. <code>query</code>, <code>lines</code> and <code>spliceLines</code> work with large data (below).</td></tr>
     <tr><td><code>host.store</code></td><td><code>store</code></td><td><code>get</code>, <code>put</code>, <code>delete</code> and <code>keys</code> on the plugin's own saved values.</td></tr>
     <tr><td><code>host.llm</code></td><td><code>llm</code></td><td>Model calls through the user's connections, in two passes (below).</td></tr>
     <tr><td><code>host.net</code></td><td><code>network</code></td><td>Web requests in two passes, like <code>host.llm</code>, only to the hosts listed in the manifest's <code>networkHosts</code>.</td></tr>
@@ -123,6 +123,18 @@ const { notes } = await res.json()</code></pre>
 <h2>Data</h2>
 <p>Everything under <code>data/</code> belongs to the person using the app. Updates never change it, backups include it, and the agent can read and edit it directly, so plain JSON files with a clear layout make your app easy to extend by asking. A short <code>data/README.md</code> describing the files helps the agent a lot.</p>
 <p>Files in <code>data/</code> whose names start with an underscore, like <code>_example-book.json</code>, are templates: your app should not show them, the agent copies them to create new entries, and missing ones arrive with updates.</p>
+
+<h3>Large data</h3>
+<p>The files stay the source of truth, so the agent can still read and edit them. These calls only save the plugin from reading everything. They arrived in Chrysalis 1.0.6, so check for them (<code>typeof host.fs.query === "function"</code>) and keep a plain path for older servers.</p>
+<p><code>host.fs.query(spec, options)</code> reads fields from many JSON files at once. Chrysalis keeps an index beside your data and refreshes an entry whenever its file changes, whoever changed it.</p>
+<pre><code>const { rows, total } = host.fs.query(
+  { files: "characters/*/card.json", fields: { name: "name", fav: "extensions.fav", hasBook: "character_book?" } },
+  { where: { fav: true }, sort: "name", offset: 0, limit: 50 },
+)
+// rows: [{ path, keys: ["aria"], data: { name, fav, hasBook } }]</code></pre>
+<p>A field path ending in <code>?</code> answers whether the value exists, without the index holding it. <code>where</code> takes a value, a list of values, or <code>{contains, gt, gte, lt, lte, exists, not}</code>. A file that is not valid JSON comes back with <code>error</code>.</p>
+<p><code>host.fs.lines(path, from, to)</code> reads records of a JSONL file by position, and a negative <code>from</code> counts from the end. <code>host.fs.spliceLines(path, from, records)</code> keeps the records before <code>from</code> as they are on disk and writes the new ones after them. Both answer with <code>total</code> and the file's <code>version</code>, which changes whenever the file does. A long transcript can open with its last few hundred messages, and a save writes only what changed.</p>
+<p>Chrysalis keeps the index in <code>data/__index/</code>. Plugins cannot write there, and it is left out of history and backups.</p>
 
 <h2>AGENTS.md</h2>
 <p>Put an <code>AGENTS.md</code> at the root of your app with the things the agent should know before changing it: where the important code is, the shapes of your data files, and anything that is easy to break. The agent reads it before editing the app.</p>
