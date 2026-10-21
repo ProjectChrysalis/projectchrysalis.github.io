@@ -120,6 +120,10 @@ defaultModel: null</code></pre>
 
 <p>Server terminal LLM traces print indented request JSON with complete message fields. Newlines stay escaped inside JSON strings. Thinking and tool results print in full, with brighter section separators when terminal colors are enabled.</p>
 
+<h2 id="generation-settings">Generation settings</h2>
+<p>In <span class="ui">Settings → API connections</span>, add or edit any provider connection and expand <span class="ui">Generation settings</span>. Set output tokens, temperature, top P, penalties, and reasoning effort where the source supports them. Controls are available for built-in providers, custom endpoints, reverse proxies, cloud credentials, and subscription sign-ins. Text completion connections omit reasoning; ChatGPT subscriptions offer reasoning without output or sampling controls.</p>
+<p>Set values override app presets and agent requests for that connection. Blank fields leave requests unchanged. Use <span class="ui">Clear overrides</span> and save to restore that behavior. Model limits still apply. Native thinking settings use each provider's format; reasoning levels are matched to the model's supported levels. Anthropic thinking disables temperature and top P. Output limits include thinking tokens, and budgeted thinking needs more than 1024 output tokens. Unsupported requests report the provider's error.</p>
+
 <p>OpenAI-compatible connections accept a clean stream ending without a finish reason, keeping the generated reply. Provider errors and connection failures still report an error.</p>
 
 <p>When Google blocks a prompt before generating a reply, Chrysalis reports the provider's block reason and response ID. A stream that ends without either a finish reason or prompt feedback still reports an incomplete stream.</p>
