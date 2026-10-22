@@ -145,6 +145,8 @@ export function handleTool(name, args, host) {
 <h3>Tools from other plugins</h3>
 <p>A dedicated tools plugin can offer tools to every model request in its app. It exports <code>appTools(ctx, host)</code> returning <code>{ tools: [...] }</code>, and any sibling plugin that marks a request with <code>wantsTools: true</code> gets them, with calls routed back to the plugin that offered each one. Roleplay works this way: its chat plugin asks for tools, and its separate tools plugin supplies dice, pictures and custom tools. Turn the tools plugin off and tool calling is gone.</p>
 
+<p>OpenAI Chat Completions and Responses keep system messages in their supplied positions. Native Anthropic and Gemini requests carry leading system instructions separately and convert later system messages to user messages in place.</p>
+
 <h2>Adjusting other plugins' prompts</h2>
 <p>A plugin with both <code>hooks</code> and <code>llm</code> can export <code>llmRequest(ctx, host)</code>. It runs before every model request another plugin in the same app makes, sees the request as <code>ctx.request</code> (with <code>ctx.plugin</code> and <code>ctx.key</code> naming who asked), and returns the fields to change:</p>
 <pre><code>export function llmRequest(ctx, host) {
