@@ -1,0 +1,19 @@
+<!--
+title: Spending
+description: See what model calls cost, per day, per app and per model.
+section: Using Chrysalis
+order: 6
+-->
+<h1>Spending</h1>
+<p class="lead">Every call Chrysalis makes to a model is counted: the agent's steps, each app's generations and calls through the API. <span class="ui">Settings</span> &gt; <span class="ui">Spending</span> adds them up.</p>
+
+<h2>What it shows</h2>
+<p>Pick the last 7, 30 or 90 days. The top row shows what you spent, how many calls were made, how many tokens they used, and how much of the prompt the provider read from its cache. A high cache share means cheaper and faster replies.</p>
+<p>The bars show each day. Tap or point at a bar to see that day's numbers. Below them, <span class="ui">By app</span> splits the spend between the agent, each app and the API, and <span class="ui">By model</span> splits it between models.</p>
+
+<h2>Prices</h2>
+<p>Costs come from the model catalog's prices, or from a price you set for a model in an app's model settings. Calls to models with no known price, such as most local servers, still count as calls and tokens, but they are left out of the total and the page says how many there were. When nothing in the period has a price, the bars show tokens instead.</p>
+<p>Amounts are in US dollars, the currency providers price in. They are what Chrysalis worked out from the token counts the provider reported, so your provider's bill can differ slightly.</p>
+
+<h2>Where it is kept</h2>
+<p>The record sits beside your credentials, outside your workspace, one file per month. Each account sees only its own spending. Days follow your device's time zone.</p>
