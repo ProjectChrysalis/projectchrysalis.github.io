@@ -43,6 +43,7 @@ order: 1
     <tr><td><code>kind</code></td><td>Required. <code>web</code> for a web app like the starter.</td></tr>
     <tr><td><code>description</code>, <code>author</code></td><td>Optional. Shown in the launcher and the Store.</td></tr>
     <tr><td><code>repository</code></td><td>Optional <code>https://</code> link to the app's source.</td></tr>
+    <tr><td><code>receives</code></td><td>Optional. What other apps can send this one, like <code>{ "route": "/inbox", "kinds": ["character"] }</code>. See <a href="#send-items">Sending items between apps</a>.</td></tr>
     <tr><td><code>engine</code></td><td>Optional Chrysalis version range the app needs, like <code>&gt;=1.2.0</code>, <code>^1.0.0</code> or <code>&gt;=1.0.0 &lt;2.0.0</code>. Updates that need a newer Chrysalis are refused with a clear message.</td></tr>
   </tbody>
 </table>
@@ -66,6 +67,25 @@ order: 1
 const res = await fetch(`/v1/apps/${appId}/notes`)
 const { notes } = await res.json()</code></pre>
 <p>Images, fonts and other media from other websites cannot load directly. For images, use the built-in proxy: <code>&lt;img src={`/v1/apps/${appId}/img?url=${encodeURIComponent(url)}`}&gt;</code> loads any <code>https://</code> image from a host that one of your plugins lists in <code>networkHosts</code> and has the <code>network</code> permission for. Other media goes through one of your plugin's routes.</p>
+
+<h3 id="send-items">Sending items between apps</h3>
+<p>An app can hand an item, such as a character card or a note, to another app. The sending app calls:</p>
+<pre><code>const { sentTo } = await window.ChrysalisApp.share({
+  kind: "character",
+  name: "Ember",
+  data: card, // any JSON value, or a Blob (it arrives as a data: URL)
+})</code></pre>
+<p>Chrysalis asks the user which app should get it, listing only the installed apps whose manifest takes that <code>kind</code>. Nothing is sent until the user picks one, and then the receiving app opens. <code>sentTo</code> is <code>{ id, name }</code>, or <code>null</code> if they cancelled. Items can be up to 32 MiB.</p>
+<p>To take items, list the kinds in the manifest's <code>receives</code> (<code>"*"</code> takes any kind) and answer the route with a plugin:</p>
+<pre><code>export function handleRoute(req, host) {
+  if (req.method === "POST" &amp;&amp; req.path === "/inbox") {
+    const { kind, name, from, data } = req.body // from = { id, name } of the sender
+    host.fs.write(`inbox/${Date.now()}.json`, JSON.stringify(data))
+    return { status: 200, json: { ok: true } }
+  }
+  return null
+}</code></pre>
+<p>Apps never call each other directly. The user's choice is the only way an item moves, and the receiving app sees only the item, never the sender's data. If the route answers with an error, the dialog shows it so the user can pick another app or cancel.</p>
 
 <h2>Plugins</h2>
 <p>A plugin is a folder under <code>plugins/</code> with a <code>manifest.json</code> and a <code>plugin.js</code>. Plugins run on the server in a sandbox and can only do what their permissions allow.</p>
