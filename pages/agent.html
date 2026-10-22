@@ -69,6 +69,10 @@ order: 4
 <p>The agent trims older tool output when a request grows too large, while preserving its instructions, tools and your current request. Use <code>/compact</code> to fold the older part of the session into a summary: goal, progress, decisions, next steps, and the files that were read and changed. Recent messages stay in the context untouched, with their tool calls and results. Compacting again updates that summary instead of summarizing it a second time. Saved history stays available above a divider; click the divider to read the summary. Large sessions are summarized in as many parts as needed.</p>
 <p>New runs record the selected model so compaction keeps using it after a restart. If that connection is unavailable, compaction stops instead of switching to another one. Stop an active run before compacting it. Editing or retrying a message sent after a compaction keeps the compaction; going back to a message before it undoes it.</p>
 
+<h2 id="helpers">Helpers</h2>
+<p>For big reading jobs, such as checking every card in a library for one thing, the agent can send helpers. A helper gets one job, reads and searches on its own, and reports back only what it found, so the chat's context stays small and the agent can run several at once. Helpers can only read: they cannot change files or ask you anything.</p>
+<p>Helpers are off until you turn them on in <span class="ui">Settings</span> &gt; <span class="ui">Agent</span> &gt; <span class="ui">Tools</span>. Each one costs extra model calls, which show under the agent on the <a href="spending.html">Spending</a> page.</p>
+
 <h2>Keeping it on track</h2>
 <p>Two places hold what the agent should know, and it reads both on every request without being asked.</p>
 <ul>
