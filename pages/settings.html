@@ -81,17 +81,7 @@ defaultModel: null
 
 # New models and price changes, checked once a day, so they show up without
 # waiting for a Chrysalis update. Only model details are downloaded.
-modelUpdates: true
-
-# ---- Google Drive backups ----
-
-# A Google OAuth client of your own for Drive backups: a "Web application"
-# client that redirects to
-#   https://projectchrysalis.github.io/assets/google-drive.html
-# null uses the built-in one, when this build has one.
-google:
-  clientId: null
-  clientSecret: null</code></pre>
+modelUpdates: true</code></pre>
 <p>The defaults above are what a new file starts with; your file may differ.</p>
 <p><code>modelUpdates</code> keeps the list of models and their prices current between Chrysalis releases. Once a day Chrysalis downloads the newest model list, checks it against its published checksum, and uses only the model details in it: names, prices, context windows and output limits. A new model is only added where a provider already sends requests, so the list can never send a key somewhere new. A new provider still needs a Chrysalis update. <span class="ui">Settings</span> &gt; <span class="ui">Server</span> &gt; <span class="ui">Models</span> shows what was added and has a <span class="ui">Check now</span> button.</p>
 
@@ -115,8 +105,6 @@ google:
     <tr><td><code>agent.shellTimeoutSeconds</code></td><td><code>CHRYSALIS_AGENT_SHELL_TIMEOUT_SECONDS</code></td><td><code>--agent.shell-timeout-seconds</code></td></tr>
     <tr><td><code>defaultModel</code></td><td><code>CHRYSALIS_DEFAULT_MODEL</code></td><td><code>--default-model</code></td></tr>
     <tr><td><code>modelUpdates</code></td><td><code>CHRYSALIS_MODEL_UPDATES</code></td><td><code>--model-updates</code>, <code>--no-model-updates</code></td></tr>
-    <tr><td><code>google.clientId</code></td><td><code>CHRYSALIS_GOOGLE_CLIENT_ID</code></td><td><code>--google.client-id</code></td></tr>
-    <tr><td><code>google.clientSecret</code></td><td><code>CHRYSALIS_GOOGLE_CLIENT_SECRET</code></td><td><code>--google.client-secret</code></td></tr>
   </tbody>
 </table>
 <pre><code>CHRYSALIS_PORT=9000 ./chrysalis
