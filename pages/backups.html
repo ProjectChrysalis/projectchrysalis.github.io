@@ -1,15 +1,19 @@
 <!--
 title: Backups and moving devices
-description: Back up your whole account, restore it, or move it to your phone or another computer with a one-time code.
+description: Back up your whole account to this device or Google Drive, restore it, or move it to your phone or another computer with a one-time code.
 section: Using Chrysalis
 order: 5
 -->
 <h1>Backups and moving devices</h1>
 <p class="lead">A backup holds your whole account: every app and its data, your notes, agent chats, settings, model connections and MCP servers. Everything is in <span class="ui">Settings</span> &gt; <span class="ui">Backups</span>.</p>
 
+<h2>Google Drive</h2>
+<p>Press <span class="ui">Connect Google Drive</span> and sign in with Google. From then on every backup also goes to a <strong>Chrysalis backups</strong> folder in your Drive, and the first one goes up right away. On any other device, connect the same Google account and press <span class="ui">Show backups in Drive</span> to restore one.</p>
+<p>Chrysalis can only see the files it put in your Drive, nothing else there. API keys and sign-ins are not copied: a restore from Drive keeps the keys already on that device, so on a new device you add them again. Each copy in Drive is the whole account, so Drive keeps only the 2 newest daily copies, plus any you made with <span class="ui">Back up now</span>. If your Drive is too full, the upload stops and the page says so.</p>
+
 <h2>Backups on this device</h2>
-<p>Chrysalis backs your account up once a day while it runs, and keeps the last five. Change how many it keeps, or turn it off, under <span class="ui">On this device</span>. <span class="ui">Back up now</span> makes one right away; those stay until you delete them.</p>
-<p>Only files that changed since the last backup take new space, so daily backups stay small. Each row shows the backup's size and how much of it was new. On Android every backup is a full copy, so keep fewer there.</p>
+<p>Turn on <span class="ui">Back up every day</span> to have Chrysalis back your account up once a day while it runs. It keeps the last three daily backups and deletes older ones; change the number under <span class="ui">Daily backups to keep</span>. <span class="ui">Back up now</span> makes one right away, and those stay until you delete them.</p>
+<p>The first backup is a full copy of the account, so check you have the room for it. After that, only files that changed since the last backup take new space, so daily backups stay small. Each row shows the backup's size and how much of it was new. On Android every backup is a full copy, so keep fewer there.</p>
 <p><span class="ui">Restore</span> puts your account back the way it was at that point. Before it does, Chrysalis backs up the account as it is now, so a restore can be undone by restoring that one.</p>
 
 <h2>Move to another device</h2>
