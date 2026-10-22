@@ -16,6 +16,8 @@ order: 1
   <li><strong>No telemetry.</strong> There is no Chrysalis account and no Chrysalis cloud. Your chats, characters and keys stay on the device running Chrysalis.</li>
 </ul>
 
+<p>Speech requests and voice and model lists refuse redirects, so a speech endpoint cannot forward its saved key to another address. Configure the service's final API address in <span class="ui">Settings</span> &gt; <span class="ui">Speech</span>.</p>
+
 <h2>Why add-ons are the risk</h2>
 <p>In many apps, an extension is a script that runs in the same page as everything else. It can read what the page can read, call anything the page can call, and see every key the page can see. So one bad extension gets everything, and so does a good one that turns bad in a later update.</p>
 <p>Chrysalis is built so that apps and plugins never run with that kind of access. Nobody has to check every line of an app for this to hold: the limits are enforced by the browser's sandbox and by the server, not by trusting the app to behave.</p>
