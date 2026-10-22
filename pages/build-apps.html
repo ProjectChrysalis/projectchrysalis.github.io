@@ -87,6 +87,19 @@ const { notes } = await res.json()</code></pre>
 }</code></pre>
 <p>Apps never call each other directly. The user's choice is the only way an item moves, and the receiving app sees only the item, never the sender's data. If the route answers with an error, the dialog shows it so the user can pick another app or cancel.</p>
 
+<h3 id="speech">Speech</h3>
+<p>Apps read text aloud through the voices the user set up in Settings &gt; Speech. Free Edge voices need nothing; the user can also add ElevenLabs, OpenAI, Gemini, Fish Audio, OpenRouter or a local server. Keys never reach the app.</p>
+<pre><code>const { endpoints } = await (await fetch("/v1/audio/speech/endpoints")).json()
+const ep = endpoints[0] // { id, name, kind, model, voice, controls }
+const { voices } = await (await fetch(`/v1/audio/speech/endpoints/${ep.id}/voices`)).json()
+const res = await fetch("/v1/audio/speech", {
+  method: "POST",
+  headers: { "content-type": "application/json" },
+  body: JSON.stringify({ text, endpointId: ep.id, voice: voices[0].id, speed: 1.1, style: "whispering, nervous" }),
+})
+const { dataUrl } = await res.json() // play it with new Audio(dataUrl)</code></pre>
+<p>Leave out <code>endpointId</code> and pass <code>provider: "edge"</code> with a voice such as <code>en-US-AriaNeural</code> for the free voices. Each service lists the settings it honors in <code>controls</code>: <code>speed</code> and <code>pitch</code> are multipliers (1 is normal; pitch is for Edge voices), <code>style</code> is plain words describing the delivery, and <code>stability</code> and <code>similarity</code> (0 to 1) tune ElevenLabs voices. A service ignores settings it does not list. Text up to 20,000 characters is read in pieces and returned as one clip.</p>
+
 <h2>Plugins</h2>
 <p>A plugin is a folder under <code>plugins/</code> with a <code>manifest.json</code> and a <code>plugin.js</code>. Plugins run on the server in a sandbox and can only do what their permissions allow.</p>
 <pre><code>{
