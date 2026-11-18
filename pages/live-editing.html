@@ -29,6 +29,10 @@ order: 2
   </tbody>
 </table>
 
+<h2>Fast until you edit</h2>
+<p>An app nobody is editing is served fast: the builder uses the production builds of React and other packages, which run about twice as fast as their development builds. The first time a file in <code>src/</code> changes while the app is open, the builder rebuilds it for development and the page reloads once. Every edit after that is a hot update.</p>
+<p>When the edits stop for 30 minutes, the next time the app opens it gets the fast build again.</p>
+
 <h2>How the builder works</h2>
 <p>The builder is the part of a dev server an app needs, running in your browser:</p>
 <ul>
@@ -50,7 +54,8 @@ order: 2
 <ul>
   <li>a changed module declines hot updates, or nothing above it can accept one;</li>
   <li>a tab was away long enough that the update files it missed were folded into a new snapshot;</li>
-  <li>the app was fully rebuilt, for example with the <span class="ui">Rebuild</span> button.</li>
+  <li>the app was fully rebuilt, for example with the <span class="ui">Rebuild</span> button;</li>
+  <li>it is the first edit to an app that was running its fast build.</li>
 </ul>
 <p>Code that uses top-level <code>await</code> cannot be swapped as a module, so those apps are built as one production bundle and reload on each change.</p>
 
